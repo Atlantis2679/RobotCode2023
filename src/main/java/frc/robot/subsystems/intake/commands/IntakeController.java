@@ -1,9 +1,9 @@
-package frc.robot.commands;
+package frc.robot.subsystems.intake.commands;
 
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.intake.Intake;
 
 public class IntakeController extends CommandBase {
   private final Intake intake;

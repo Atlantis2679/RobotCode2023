@@ -1,13 +1,13 @@
-package frc.robot.commands;
+package frc.robot.subsystems.drivetrain.commands;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.drivetrain.DrivetrainConstants;
 
 public class ArcadeDrive extends CommandBase {
     private final Drivetrain drivetrain;
@@ -17,10 +17,10 @@ public class ArcadeDrive extends CommandBase {
     private final BooleanSupplier IsSensitiveForwardSupplier;
     private final BooleanSupplier IsSensitiveRotationSupplier;
 
-    private final double FORWARD_MULTIPLIER = Constants.ArcadeDrive.FORWARD_MULTIPLIER;
-    private final double SENSITIVE_FORWARD_MULTIPLIER = Constants.ArcadeDrive.SENSITIVE_FORWARD_MULTIPLIER;
-    private final double ROTATION_MULTIPLIER = Constants.ArcadeDrive.ROTATION_MULTIPLIER;
-    private final double SENSITIVE_ROTATION_MULTIPLIER = Constants.ArcadeDrive.SENSITIVE_ROTATION_MULTIPLIER;
+    private final double FORWARD_MULTIPLIER = DrivetrainConstants.ArcadeDrive.FORWARD_MULTIPLIER;
+    private final double SENSITIVE_FORWARD_MULTIPLIER = DrivetrainConstants.ArcadeDrive.SENSITIVE_FORWARD_MULTIPLIER;
+    private final double ROTATION_MULTIPLIER = DrivetrainConstants.ArcadeDrive.ROTATION_MULTIPLIER;
+    private final double SENSITIVE_ROTATION_MULTIPLIER = DrivetrainConstants.ArcadeDrive.SENSITIVE_ROTATION_MULTIPLIER;
 
     public ArcadeDrive(
             Drivetrain drivetrain,

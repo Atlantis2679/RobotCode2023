@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -6,16 +6,15 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
     private static Intake instance = null;
-    private final TalonSRX motor = new TalonSRX(Constants.Intake.MOTOR_ID);
+    private final TalonSRX motor = new TalonSRX(IntakeConstants.MOTOR_ID);
 
     private Intake() {
         SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(
                 true,
-                Constants.Intake.CURRENT_LIMIT_AMP,
+                IntakeConstants.CURRENT_LIMIT_AMP,
                 0,
                 0
         );

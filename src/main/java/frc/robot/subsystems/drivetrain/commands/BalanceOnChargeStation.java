@@ -1,11 +1,11 @@
-package frc.robot.commands;
+package frc.robot.subsystems.drivetrain.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
-public class BalanceOnChargeStationAuto extends CommandBase {
+public class BalanceOnChargeStation extends CommandBase {
   private final Drivetrain drivetrain;
   private final double POSITION_TOLERANCE = Constants.Autos.BalanceOnChargeStationAuto.POSITION_TOLERANCE;
   private final double VELOCITY_TOLERANCE = Constants.Autos.BalanceOnChargeStationAuto.VELOCITY_TOLERANCE;
@@ -19,7 +19,7 @@ public class BalanceOnChargeStationAuto extends CommandBase {
       Constants.Autos.BalanceOnChargeStationAuto.KD
   );
 
-  public BalanceOnChargeStationAuto(Drivetrain drivetrain) {
+  public BalanceOnChargeStation(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     pidController.setTolerance(POSITION_TOLERANCE, VELOCITY_TOLERANCE);
@@ -27,7 +27,9 @@ public class BalanceOnChargeStationAuto extends CommandBase {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    pidController.reset();
+  }
 
   @Override
   public void execute() {

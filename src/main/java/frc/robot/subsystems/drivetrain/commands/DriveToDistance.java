@@ -1,35 +1,39 @@
-package frc.robot.commands;
+package frc.robot.subsystems.drivetrain.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.drivetrain.DrivetrainConstants;
 
 public class DriveToDistance extends CommandBase {
   private final Drivetrain drivetrain;
   private final PIDController pidControllerLeft = new PIDController(
-          Constants.Autos.DriveToDistance.KP,
-          Constants.Autos.DriveToDistance.KI,
-          Constants.Autos.DriveToDistance.KD);
+          DrivetrainConstants.DriveToDistance.KP,
+          DrivetrainConstants.DriveToDistance.KI,
+          DrivetrainConstants.DriveToDistance.KD);
   private final PIDController pidControllerRight = new PIDController(
-          Constants.Autos.DriveToDistance.KP,
-          Constants.Autos.DriveToDistance.KI,
-          Constants.Autos.DriveToDistance.KD);
-  private final double POSITION_TOLERANCE = Constants.Autos.DriveToDistance.POSITION_TOLERANCE;
-  private final double VELOCITY_TOLERANCE = Constants.Autos.DriveToDistance.VELOCITY_TOLERANCE;
+          DrivetrainConstants.DriveToDistance.KP,
+          DrivetrainConstants.DriveToDistance.KI,
+          DrivetrainConstants.DriveToDistance.KD);
+  private final double POSITION_TOLERANCE = DrivetrainConstants.DriveToDistance.POSITION_TOLERANCE;
+  private final double VELOCITY_TOLERANCE = DrivetrainConstants.DriveToDistance.VELOCITY_TOLERANCE;
 
   public DriveToDistance(Drivetrain drivetrain, double meters) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
 
     pidControllerLeft.setTolerance(POSITION_TOLERANCE, VELOCITY_TOLERANCE);
-    pidControllerLeft.setSetpoint(meters + drivetrain.getLeftDistanceMeters());
+    pidControllerLeft.setSetpoint(meters);
     pidControllerRight.setTolerance(POSITION_TOLERANCE, VELOCITY_TOLERANCE);
-    pidControllerRight.setSetpoint(meters + drivetrain.getRightDistanceMeters());
+    pidControllerRight.setSetpoint(meters);
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    drivetrain.resetEncoders();
+    pidControllerLeft.reset();
+    pidControllerRight.reset();
+  }
 
   @Override
   public void execute() {

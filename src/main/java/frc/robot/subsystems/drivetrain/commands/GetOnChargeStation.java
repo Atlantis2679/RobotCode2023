@@ -1,15 +1,15 @@
-package frc.robot.commands;
+package frc.robot.subsystems.drivetrain.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
-public class GetOnChargeStationAuto extends CommandBase {
+public class GetOnChargeStation extends CommandBase {
     private final Drivetrain drivetrain;
     private final boolean IS_REVERSED = Constants.Autos.BalanceOnChargeStationAuto.IS_REVERSED;
     private final double FINISH_ANGLE = Constants.Autos.GetOnChargeStationAuto.FINISH_ANGLE;
 
-    public GetOnChargeStationAuto(Drivetrain drivetrain) {
+    public GetOnChargeStation(Drivetrain drivetrain) {
         this.drivetrain = drivetrain;
         addRequirements(drivetrain);
     }

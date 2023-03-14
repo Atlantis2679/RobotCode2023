@@ -1,110 +1,139 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.*;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Lifter;
-
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.commands.ArmController;
+import frc.robot.subsystems.arm.commands.ArmPositionsCommands;
+import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.drivetrain.commands.ArcadeDrive;
+import frc.robot.subsystems.drivetrain.commands.DriveToDistance;
+import frc.robot.subsystems.drivetrain.commands.TurnByDegree;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.commands.IntakeController;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
-    private final Drivetrain drivetrain = Drivetrain.getInstance();
-    private final Intake intake = Intake.getInstance();
-    // private final Lifter lifter = Lifter.getInstance();
-    private final Arm arm = Arm.getInstance();
-    public final CommandXboxController driverController = new CommandXboxController(Constants.OI.DRIVER_PORT);
-    public final CommandXboxController operatorController = new CommandXboxController(Constants.OI.OPERATOR_PORT);
+        private final Drivetrain drivetrain = Drivetrain.getInstance();
+        private final Intake intake = Intake.getInstance();
+        private final Arm arm = Arm.getInstance();
+        public final CommandXboxController driverController = new CommandXboxController(Constants.OI.DRIVER_PORT);
+        public final CommandXboxController operatorController = new CommandXboxController(Constants.OI.OPERATOR_PORT);
 
-    private interface CommandSupplier {
-        Command getCommand();
-    }
+        private interface CommandSupplier {
+                Command getCommand();
+        }
 
-    private final SendableChooser<CommandSupplier> firstAutoCommandChooser = new SendableChooser<>();
-    private final SendableChooser<CommandSupplier> secondAutoCommandChooser = new SendableChooser<>();
+        private final SendableChooser<CommandSupplier> firstAutoCommandChooser = new SendableChooser<>();
+        private final SendableChooser<CommandSupplier> secondAutoCommandChooser = new SendableChooser<>();
 
-    public RobotContainer() {
-        CameraServer.startAutomaticCapture();
-        configureBindings();
-        firstAutoCommandChooser.setDefaultOption(
-                "Release Cone",
-                () -> Autos.releaseCone(intake));
+        public RobotContainer() {
+                CameraServer.startAutomaticCapture();
+                configureBindings();
+                firstAutoCommandChooser.setDefaultOption(
+                                "Release Cone",
+                                () -> Autos.releaseCone(intake));
+                
+                firstAutoCommandChooser.setDefaultOption(
+                                "Release Cone Second",
+                                () -> Autos.releaseConeSecond(arm, intake, drivetrain));
 
-        firstAutoCommandChooser.addOption(
-                "Release Cube",
-                () -> Autos.releaseCube(arm, intake));
+                firstAutoCommandChooser.setDefaultOption(
+                                "Release Cone Third",
+                                () -> Autos.releaseConeThird(arm, intake, drivetrain));
 
-        firstAutoCommandChooser.addOption(
-                "None",
-                () -> new InstantCommand());
+                firstAutoCommandChooser.addOption(
+                                "Release Cube",
+                                () -> Autos.releaseCube(intake));
+                
+                firstAutoCommandChooser.addOption(
+                                "Release Cube Second", 
+                                () -> Autos.releaseCubeSecond(arm, intake, drivetrain));
+                
+                firstAutoCommandChooser.addOption(
+                                "Release Cube Third", 
+                                () -> Autos.releaseCubeThird(arm, intake));
 
-        SmartDashboard.putData("First Auto Command", firstAutoCommandChooser);
+                firstAutoCommandChooser.addOption(
+                                "None",
+                                () -> new InstantCommand());
 
-        secondAutoCommandChooser.setDefaultOption(
-                "Balance On Charge Station",
-                () -> Autos.balanceChargeStation(
-                        drivetrain,
-                        arm));
+                SmartDashboard.putData("First Auto Command", firstAutoCommandChooser);
 
-        secondAutoCommandChooser.addOption(
-                "Drive Backwards Outside Community",
-                () -> Autos.driveBackwardsOutsideCommunity(drivetrain));
+                secondAutoCommandChooser.setDefaultOption(
+                                "Balance On Charge Station",
+                                () -> Autos.balanceChargeStation(
+                                                drivetrain,
+                                                arm));
 
-        secondAutoCommandChooser.addOption(
-                "None",
-                () -> new InstantCommand());
+                secondAutoCommandChooser.addOption(
+                                "Drive Backwards Outside Community and turn 180 degrease",
+                                () -> Autos.driveBackwardsOutsideCommunity(drivetrain, true));
 
-        SmartDashboard.putData("Second Auto Command", secondAutoCommandChooser);
-    }
+                secondAutoCommandChooser.addOption(
+                                "Drive Backwards Outside Community",
+                                () -> Autos.driveBackwardsOutsideCommunity(drivetrain, false));
 
-    private void configureBindings() {
-        // driver
+                secondAutoCommandChooser.addOption(
+                                "None",
+                                () -> new InstantCommand());
 
-        drivetrain.setDefaultCommand(new ArcadeDrive(
-                drivetrain,
-                () -> -driverController.getLeftY(),
-                driverController::getRightX,
-                () -> driverController.leftBumper().getAsBoolean(),
-                () -> driverController.rightBumper().getAsBoolean()));
+                SmartDashboard.putData("Second Auto Command", secondAutoCommandChooser);
+        }
 
-        // operator
+        private void configureBindings() {
+                // driver
 
-        intake.setDefaultCommand(new IntakeController(
-                intake,
-                operatorController::getRightTriggerAxis,
-                operatorController::getLeftTriggerAxis));
+                drivetrain.setDefaultCommand(new ArcadeDrive(
+                                drivetrain,
+                                () -> -driverController.getLeftY(),
+                                driverController::getRightX,
+                                () -> driverController.leftBumper().getAsBoolean(),
+                                () -> driverController.rightBumper().getAsBoolean()));
 
-        // lifter.setDefaultCommand(new LifterController(lifter, () ->
-        // -operatorController.getRightY()));
+                // operator
 
-        new Trigger(() -> MathUtil.applyDeadband(operatorController.getLeftY(),
-                Constants.OI.JOYSTICKS_DEADBAND_VALUE) != 0)
-                .whileTrue(new ArmController(
-                        arm,
-                        () -> -operatorController.getLeftY()));
+                intake.setDefaultCommand(new IntakeController(
+                                intake,
+                                operatorController::getRightTriggerAxis,
+                                operatorController::getLeftTriggerAxis));
 
-        operatorController.a().onTrue(new MoveArmToPosition(arm, MoveArmToPosition.Positions.REST));
-        operatorController.b().onTrue(new MoveArmToPosition(arm, MoveArmToPosition.Positions.FIRST));
-        operatorController.x().onTrue(new MoveArmToPosition(arm, MoveArmToPosition.Positions.SECOND));
-        operatorController.y().onTrue(new MoveArmToPosition(arm, MoveArmToPosition.Positions.THIRD));
-        operatorController.leftBumper().onTrue(new InstantCommand(arm::resetEncoder));
-        operatorController.rightBumper().onTrue(new InstantCommand(() -> arm.setSpeed(0), arm));
-    }
+                arm.setDefaultCommand(new ArmController(arm,
+                                () -> -operatorController.getLeftY(),
+                                () -> -operatorController.getRightY(),
+                                true));
 
-    public Command getAutonomousCommand() {
-        return new InstantCommand(() -> drivetrain.resetPitch())
-                .andThen(firstAutoCommandChooser.getSelected().getCommand())
-                .andThen(secondAutoCommandChooser.getSelected().getCommand());
-    }
+                operatorController.a().onTrue(ArmPositionsCommands.rest(arm));
+                operatorController.x().onTrue(ArmPositionsCommands.cubeSecond(arm));
+                operatorController.y().onTrue(ArmPositionsCommands.cubeThird(arm));
+                
+                operatorController.b().onTrue(ArmPositionsCommands.feeder(arm));
+                operatorController.povLeft().onTrue(ArmPositionsCommands.coneSecond(arm));
+                operatorController.povUp().onTrue(ArmPositionsCommands.coneThird(arm));
+                operatorController.povDown().onTrue(ArmPositionsCommands.floor(arm));
+ 
+                operatorController.leftBumper().onTrue(new InstantCommand(
+                                () -> arm.setEmergencyMode(!arm.getEmergencyMode())));
+                operatorController.rightBumper().whileTrue(
+                                new RunCommand(() -> {
+                                        arm.setSpeedShoulder(0);
+                                        arm.setSpeedElbow(0);
+                                }, arm));
+
+                
+                operatorController.rightStick().onTrue(new InstantCommand(() -> arm.resetEncoders()));
+
+                driverController.a().onTrue(new DriveToDistance(drivetrain, -0.15));
+
+        }
+
+        public Command getAutonomousCommand() {
+                return new InstantCommand(() -> drivetrain.resetPitch())
+                                .andThen(firstAutoCommandChooser.getSelected().getCommand())
+                                .andThen(secondAutoCommandChooser.getSelected().getCommand());
+        }
 }
