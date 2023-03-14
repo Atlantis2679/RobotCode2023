@@ -115,6 +115,7 @@ public class RobotContainer {
                 operatorController.povLeft().onTrue(ArmPositionsCommands.coneSecond(arm));
                 operatorController.povUp().onTrue(ArmPositionsCommands.coneThird(arm));
                 operatorController.povDown().onTrue(ArmPositionsCommands.floor(arm));
+                operatorController.povRight().onTrue(ArmPositionsCommands.restElbow(arm));
  
                 operatorController.leftBumper().onTrue(new InstantCommand(
                                 () -> arm.setEmergencyMode(!arm.getEmergencyMode())));
