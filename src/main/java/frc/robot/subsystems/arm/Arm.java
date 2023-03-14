@@ -79,6 +79,8 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+
         SmartDashboard.putNumber("arm angle shoulder", getShoulderAngle());
         SmartDashboard.putNumber("arm angle elbow", getElbowAngle(false));
         SmartDashboard.putNumber("arm angle elbow relative to shoulder", getElbowAngle(true));

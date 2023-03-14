@@ -25,18 +25,22 @@ public final class DrivetrainConstants {
     }
 
     public static final class DriveToDistance {
-        public static final double KP = 0;
-        public static final double KI = 0;
-        public static final double KD = 0;
+        // public static final double KP = 0.4;
+        // public static final double KI = 0;
+        // public static final double KD = 0.05;
 
-        public static final double POSITION_TOLERANCE = 0.10;
+        public static final double KP = 1.3;
+        public static final double KI = 0.005;
+        public static final double KD = 0.3;
+
+        public static final double POSITION_TOLERANCE = 0.07;
         public static final double VELOCITY_TOLERANCE = 0.02;
     }
 
     public static final class TurnByAngle {
-        public static final double KP = 2.6;
+        public static final double KP = 1.27;
         public static final double KI = 0;
-        public static final double KD = 0.5;
+        public static final double KD = 0.3;
 
         public static final double POSITION_TOLERANCE = 0.05;
         public static final double VELOCITY_TOLERANCE = 0.02;

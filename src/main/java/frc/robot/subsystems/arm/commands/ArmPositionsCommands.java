@@ -1,8 +1,11 @@
 package frc.robot.subsystems.arm.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmConstants;
+import frc.robot.subsystems.arm.commands.MoveArmToPosition.Joint;
+import frc.robot.subsystems.intake.Intake;
 
 public class ArmPositionsCommands {
     public static Command rest(Arm arm) {
@@ -11,6 +14,14 @@ public class ArmPositionsCommands {
             ArmConstants.ANGLE_REST_SHOULDER,
             ArmConstants.ANGLE_REST_ELBOW,
             true);
+    }
+
+    public static Command restElbow(Arm arm) {
+         return new MoveArmToPosition(
+             arm,
+             ArmConstants.ANGLE_REST_ELBOW,
+             Joint.ELBOW,
+             true);
     }
 
     public static Command cubeThird(Arm arm) {

@@ -8,34 +8,48 @@ public final class Constants {
   }
 
   public static final class Autos {
-    public static final class ReleaseCone {
-      public static final double RELEASE_SPEED = 0.8;
-      public static final double RELEASE_TIME_SECONDS = 1;
+
+    public static final class FreeArm {
+      public static final double SHOULDER_RAISE_SPEED = 0.4;
+      public static final double TIMEOUT_SECONDS = 0.3;
+      public static final double SHOULDER_FREE_ANGLE = -70;
     }
 
     public static final class ReleaseCube {
       public static final double RELEASE_SPEED = 0.4;
-      public static final double RELEASE_TIME_SECONDS = 0.7;
-    }
-
-    public static final class releaseCubeThird {
-      public static final double TIMEOUT_SECONDS_RAISE = 4;
-      public static final double TIMEOUT_SECONDS_LOWER = 4;
+      public static final double RELEASE_TIME_SECONDS = 0.5;
     }
 
     public static final class releaseCubeSecond {
-      public static final double TIMEOUT_SECONDS_RAISE = 4;
-      public static final double TIMEOUT_SECONDS_LOWER = 4;
+      public static final double TIMEOUT_SECONDS_RAISE = 6;
+      public static final double TIMEOUT_SECONDS_LOWER = 6;
+
+      public static final double DRIVE_TO_DISTANCE = -0.3;
+    }
+
+    public static final class releaseCubeThird {
+      public static final double TIMEOUT_SECONDS_RAISE = 6;
+      public static final double TIMEOUT_SECONDS_LOWER = 6;
+    }
+
+    public static final class ReleaseCone {
+      public static final double RELEASE_SPEED = 0.4;
+      public static final double RELEASE_TIME_SECONDS = 1;
     }
 
     public static final class releaseConeThird {
-      public static final double TIMEOUT_SECONDS_RAISE = 4;
-      public static final double TIMEOUT_SECONDS_LOWER = 4;
+      public static final double TIMEOUT_SECONDS_RAISE = 6;
+      public static final double TIMEOUT_SECONDS_LOWER = 6;
+
+      public static final double DRIVE_TO_DISTANCE_START = -0.3;
+      public static final double DRIVE_TO_DISTANCE_BEFORE_RELEASE = 0.3;
+      public static final double DRIVE_TO_DISTANCE_END = -0.4;
+
     }
 
     public static final class releaseConeSecond {
-      public static final double TIMEOUT_SECONDS_RAISE = 4;
-      public static final double TIMEOUT_SECONDS_LOWER = 4;
+      public static final double TIMEOUT_SECONDS_RAISE = 6;
+      public static final double TIMEOUT_SECONDS_LOWER = 6;
     }
 
 

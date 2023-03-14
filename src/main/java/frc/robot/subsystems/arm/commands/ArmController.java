@@ -14,12 +14,14 @@ public class ArmController extends CommandBase {
 
   private final DoubleSupplier shoulderDemandSupplier;
   private final DoubleSupplier elbowDemandSupplier;
+  private boolean shouldCleanValues;
 
-  public ArmController(Arm arm, DoubleSupplier shoulderDemandSupplier, DoubleSupplier elbowDemandSupplier) {
+  public ArmController(Arm arm, DoubleSupplier shoulderDemandSupplier, DoubleSupplier elbowDemandSupplier, boolean shouldCleanValues) {
     this.arm = arm;
     addRequirements(arm);
     this.shoulderDemandSupplier = shoulderDemandSupplier;
     this.elbowDemandSupplier = elbowDemandSupplier;
+    this.shouldCleanValues = shouldCleanValues;
   }
 
   @Override
@@ -31,13 +33,18 @@ public class ArmController extends CommandBase {
     double shoulderDemand = shoulderDemandSupplier.getAsDouble();
     double elbowDemand = elbowDemandSupplier.getAsDouble();
 
-    shoulderDemand = MathUtil.clamp(shoulderDemand, -1, 1);
-    shoulderDemand = MathUtil.applyDeadband(shoulderDemand, Constants.OI.JOYSTICKS_DEADBAND_VALUE);
-    elbowDemand = MathUtil.clamp(elbowDemand, -1.0, 1.0);
-    elbowDemand = MathUtil.applyDeadband(elbowDemand, Constants.OI.JOYSTICKS_DEADBAND_VALUE);
+    if(shouldCleanValues){
+      shoulderDemand = MathUtil.clamp(shoulderDemand, -1, 1);
+      shoulderDemand = MathUtil.applyDeadband(shoulderDemand, Constants.OI.JOYSTICKS_DEADBAND_VALUE);
+      elbowDemand = MathUtil.clamp(elbowDemand, -1.0, 1.0);
+      elbowDemand = MathUtil.applyDeadband(elbowDemand, Constants.OI.JOYSTICKS_DEADBAND_VALUE);
 
-    shoulderDemand *= ArmConstants.Controller.MULTIPLIER_SHOULDER * 12;
-    elbowDemand *= ArmConstants.Controller.MULTIPLIER_ELBOW * 12;
+      shoulderDemand *= ArmConstants.Controller.MULTIPLIER_SHOULDER;
+      elbowDemand *= ArmConstants.Controller.MULTIPLIER_ELBOW;
+    }
+
+    shoulderDemand *= 12;
+    elbowDemand *= 12;
 
     ArmValues<Double> feedforwardResults = arm.calculateFeedforward(
       arm.getShoulderAngle(),

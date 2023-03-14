@@ -1,9 +1,12 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.commands.ArmController;
 import frc.robot.subsystems.arm.commands.ArmPositionsCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.commands.BalanceOnChargeStation;
@@ -13,22 +16,38 @@ import frc.robot.subsystems.drivetrain.commands.TurnByDegree;
 import frc.robot.subsystems.intake.Intake;
 
 public final class Autos {
+  public static Command freeArm(Arm arm) {
+    return ArmPositionsCommands.restElbow(arm)
+        .andThen(new ArmController(
+            arm,
+            () -> Constants.Autos.FreeArm.SHOULDER_RAISE_SPEED,
+            () -> 0,
+            false).until(() -> arm.getShoulderAngle() > Constants.Autos.FreeArm.SHOULDER_FREE_ANGLE));
+  }
+
   public static Command releaseCone(Intake intake) {
     return new InstantCommand(() -> intake.setSpeed(-Constants.Autos.ReleaseCone.RELEASE_SPEED), intake)
         .andThen(new WaitCommand(Constants.Autos.ReleaseCone.RELEASE_TIME_SECONDS))
         .andThen(new InstantCommand(() -> intake.setSpeed(0), intake));
   }
 
-  public static Command releaseConeSecond(Arm arm, Intake intake){
-    return ArmPositionsCommands.coneSecond(arm).withTimeout(Constants.Autos.releaseConeSecond.TIMEOUT_SECONDS_RAISE)
-    .andThen(releaseCone(intake))
-    .andThen(ArmPositionsCommands.rest(arm).withTimeout(Constants.Autos.releaseCubeSecond.TIMEOUT_SECONDS_LOWER));
+  public static Command releaseConeSecond(Arm arm, Intake intake, Drivetrain drivetrain) {
+    return driveForDistance(drivetrain, 0.20, 0.3, true)
+        .andThen(freeArm(arm))
+        .andThen(ArmPositionsCommands.coneSecond(arm).withTimeout(Constants.Autos.releaseConeSecond.TIMEOUT_SECONDS_RAISE))
+        .andThen(releaseCone(intake))
+        .andThen(ArmPositionsCommands.rest(arm).withTimeout(Constants.Autos.releaseCubeSecond.TIMEOUT_SECONDS_LOWER));
   }
 
-  public static Command releaseConeThird(Arm arm, Intake intake){
-    return ArmPositionsCommands.coneThird(arm).withTimeout(Constants.Autos.releaseConeThird.TIMEOUT_SECONDS_RAISE)
-    .andThen(releaseCone(intake))
-    .andThen(ArmPositionsCommands.rest(arm).withTimeout(Constants.Autos.releaseConeThird.TIMEOUT_SECONDS_LOWER));
+  public static Command releaseConeThird(Arm arm, Intake intake, Drivetrain drivetrain) {
+    return new DriveToDistance(drivetrain, Constants.Autos.releaseConeThird.DRIVE_TO_DISTANCE_START)
+        .alongWith(freeArm(arm))
+        .andThen(ArmPositionsCommands.coneThird(arm).withTimeout(Constants.Autos.releaseConeThird.TIMEOUT_SECONDS_RAISE))
+        .andThen(new DriveToDistance(drivetrain, Constants.Autos.releaseConeThird.DRIVE_TO_DISTANCE_BEFORE_RELEASE))
+        .andThen(new WaitCommand(0.1))
+        .andThen(releaseCone(intake))
+        .andThen(new DriveToDistance(drivetrain, Constants.Autos.releaseConeThird.DRIVE_TO_DISTANCE_END))
+        .andThen(ArmPositionsCommands.rest(arm).withTimeout(Constants.Autos.releaseConeThird.TIMEOUT_SECONDS_LOWER));
   }
 
   public static Command releaseCube(Intake intake) {
@@ -37,18 +56,22 @@ public final class Autos {
         .andThen(new InstantCommand(() -> intake.setSpeed(0), intake));
   }
 
-  public static Command releaseCubeSecond(Arm arm, Intake intake){
-    return ArmPositionsCommands.cubeSecond(arm).withTimeout(Constants.Autos.releaseCubeSecond.TIMEOUT_SECONDS_RAISE)
-    .andThen(releaseCube(intake))
-    .andThen(ArmPositionsCommands.rest(arm).withTimeout(Constants.Autos.releaseCubeSecond.TIMEOUT_SECONDS_LOWER));
+  public static Command releaseCubeSecond(Arm arm, Intake intake, Drivetrain drivetrain) {
+    return new DriveToDistance(drivetrain, Constants.Autos.releaseCubeSecond.DRIVE_TO_DISTANCE)
+        .alongWith(freeArm(arm))
+        .andThen(
+            ArmPositionsCommands.cubeSecond(arm).withTimeout(Constants.Autos.releaseCubeSecond.TIMEOUT_SECONDS_RAISE))
+        .andThen(releaseCube(intake))
+        .andThen(ArmPositionsCommands.rest(arm).withTimeout(Constants.Autos.releaseCubeSecond.TIMEOUT_SECONDS_LOWER));
   }
 
-  public static Command releaseCubeThird(Arm arm, Intake intake){
-    return ArmPositionsCommands.cubeThird(arm).withTimeout(Constants.Autos.releaseCubeThird.TIMEOUT_SECONDS_RAISE)
-    .andThen(releaseCube(intake))
-    .andThen(ArmPositionsCommands.rest(arm).withTimeout(Constants.Autos.releaseCubeThird.TIMEOUT_SECONDS_LOWER));
+  public static Command releaseCubeThird(Arm arm, Intake intake) {
+    return freeArm(arm)
+        .andThen(
+            ArmPositionsCommands.cubeThird(arm).withTimeout(Constants.Autos.releaseCubeThird.TIMEOUT_SECONDS_RAISE))
+        .andThen(releaseCube(intake))
+        .andThen(ArmPositionsCommands.rest(arm).withTimeout(Constants.Autos.releaseCubeThird.TIMEOUT_SECONDS_LOWER));
   }
-
 
   public static Command driveBackwardsOutsideCommunity(Drivetrain drivetrain, boolean turnOnFinish) {
     Command driveToDistanceCommand = new DriveToDistance(drivetrain,
@@ -63,6 +86,27 @@ public final class Autos {
   public static Command balanceChargeStation(Drivetrain drivetrain, Arm arm) {
     return new GetOnChargeStation(drivetrain).withTimeout(Constants.Autos.GetOnChargeStationAuto.TIMEOUT_SECONDS)
         .andThen(new BalanceOnChargeStation(drivetrain));
+  }
+
+  public static Command driveForDistance(Drivetrain drivetrain, double metersDistance, double speed, boolean isReversed){
+    final double speedDemand = speed * (isReversed ? -1 : 1);
+
+    return new FunctionalCommand(() -> {
+      drivetrain.resetEncoders();
+      drivetrain.setSpeed(speedDemand, speedDemand);
+    },
+    () -> {},
+    interrupted -> drivetrain.setSpeed(0, 0),
+    () -> {
+      if(isReversed) {
+        return drivetrain.getLeftDistanceMeters() < -metersDistance
+        && drivetrain.getRightDistanceMeters() < -metersDistance;
+      }
+
+      return drivetrain.getLeftDistanceMeters() > metersDistance 
+      && drivetrain.getRightDistanceMeters() > metersDistance;
+    },
+    drivetrain);
   }
 
   private Autos() {

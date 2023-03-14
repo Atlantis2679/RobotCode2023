@@ -3,13 +3,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmConstants;
-import frc.robot.subsystems.arm.ArmConstants.Joints;
 import frc.robot.subsystems.arm.commands.ArmController;
 import frc.robot.subsystems.arm.commands.ArmPositionsCommands;
-import frc.robot.subsystems.arm.commands.MoveArmToPosition;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.commands.ArcadeDrive;
+import frc.robot.subsystems.drivetrain.commands.DriveToDistance;
+import frc.robot.subsystems.drivetrain.commands.TurnByDegree;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.commands.IntakeController;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -33,15 +32,31 @@ public class RobotContainer {
         private final SendableChooser<CommandSupplier> secondAutoCommandChooser = new SendableChooser<>();
 
         public RobotContainer() {
-                // CameraServer.startAutomaticCapture();
+                CameraServer.startAutomaticCapture();
                 configureBindings();
                 firstAutoCommandChooser.setDefaultOption(
                                 "Release Cone",
                                 () -> Autos.releaseCone(intake));
+                
+                firstAutoCommandChooser.setDefaultOption(
+                                "Release Cone Second",
+                                () -> Autos.releaseConeSecond(arm, intake, drivetrain));
+
+                firstAutoCommandChooser.setDefaultOption(
+                                "Release Cone Third",
+                                () -> Autos.releaseConeThird(arm, intake, drivetrain));
 
                 firstAutoCommandChooser.addOption(
                                 "Release Cube",
                                 () -> Autos.releaseCube(intake));
+                
+                firstAutoCommandChooser.addOption(
+                                "Release Cube Second", 
+                                () -> Autos.releaseCubeSecond(arm, intake, drivetrain));
+                
+                firstAutoCommandChooser.addOption(
+                                "Release Cube Third", 
+                                () -> Autos.releaseCubeThird(arm, intake));
 
                 firstAutoCommandChooser.addOption(
                                 "None",
@@ -89,7 +104,8 @@ public class RobotContainer {
 
                 arm.setDefaultCommand(new ArmController(arm,
                                 () -> -operatorController.getLeftY(),
-                                () -> -operatorController.getRightY()));
+                                () -> -operatorController.getRightY(),
+                                true));
 
                 operatorController.a().onTrue(ArmPositionsCommands.rest(arm));
                 operatorController.x().onTrue(ArmPositionsCommands.cubeSecond(arm));
@@ -108,8 +124,11 @@ public class RobotContainer {
                                         arm.setSpeedElbow(0);
                                 }, arm));
 
-
+                
                 operatorController.rightStick().onTrue(new InstantCommand(() -> arm.resetEncoders()));
+
+                driverController.a().onTrue(new DriveToDistance(drivetrain, -0.15));
+
         }
 
         public Command getAutonomousCommand() {
