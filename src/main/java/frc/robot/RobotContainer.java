@@ -7,8 +7,6 @@ import frc.robot.subsystems.arm.commands.ArmController;
 import frc.robot.subsystems.arm.commands.ArmPositionsCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.commands.ArcadeDrive;
-import frc.robot.subsystems.drivetrain.commands.DriveToDistance;
-import frc.robot.subsystems.drivetrain.commands.TurnByDegree;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.commands.IntakeController;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -126,10 +124,7 @@ public class RobotContainer {
                                 }, arm));
 
                 
-                operatorController.rightStick().onTrue(new InstantCommand(() -> arm.resetEncoders()));
-
-                driverController.a().onTrue(new DriveToDistance(drivetrain, -0.15));
-
+                // operatorController.rightStick().onTrue(new InstantCommand(() -> arm.resetEncoders()));
         }
 
         public Command getAutonomousCommand() {
