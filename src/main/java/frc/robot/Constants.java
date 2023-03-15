@@ -54,7 +54,7 @@ public final class Constants {
 
 
     public static final class DriveBackwardsOutsideCommunity {
-      public static final double DISTANCE_METERS = 3.5;
+      public static final double DISTANCE_METERS = 3.8;
       public static final double TURN_ENGLE = 180;
       public static final double TIMEOUT_SECONDS = 5;
     }
@@ -67,10 +67,13 @@ public final class Constants {
 
     public static final class BalanceOnChargeStationAuto {
       public static final boolean IS_REVERSED = true;
+      public static final double SPEED_TO_CLOSER_CENTER = 0.6;
+      public static final double DISTANCE_TO_CLOSER_CENTER = 0.4;
+      public static final double GET_CLOSER_TO_CENTER_TIMEOUT = 2;
 
-      public static final double KP = 0.017;
+      public static final double KP = 0.019;
       public static final double KI = 0;
-      public static final double KD = 0;
+      public static final double KD = 0.0;
 
       public static final double TARGET_ANGLE = 0;
       public static final double POSITION_TOLERANCE = 1.5;
