@@ -36,13 +36,13 @@ public class RobotContainer {
                                 "Release Cone",
                                 () -> Autos.releaseCone(intake));
                 
-                firstAutoCommandChooser.setDefaultOption(
-                                "Release Cone Second",
-                                () -> Autos.releaseConeSecond(arm, intake, drivetrain));
+                // firstAutoCommandChooser.setDefaultOption(
+                //                 "Release Cone Second",
+                //                 () -> Autos.releaseConeSecond(arm, intake, drivetrain));
 
-                firstAutoCommandChooser.setDefaultOption(
-                                "Release Cone Third",
-                                () -> Autos.releaseConeThird(arm, intake, drivetrain));
+                // firstAutoCommandChooser.setDefaultOption(
+                //                 "Release Cone Third",
+                //                 () -> Autos.releaseConeThird(arm, intake, drivetrain));
 
                 firstAutoCommandChooser.addOption(
                                 "Release Cube",
@@ -108,12 +108,12 @@ public class RobotContainer {
                 operatorController.a().onTrue(ArmPositionsCommands.rest(arm));
                 operatorController.x().onTrue(ArmPositionsCommands.cubeSecond(arm));
                 operatorController.y().onTrue(ArmPositionsCommands.cubeThird(arm));
-                
                 operatorController.b().onTrue(ArmPositionsCommands.feeder(arm));
                 operatorController.povLeft().onTrue(ArmPositionsCommands.coneSecond(arm));
                 operatorController.povUp().onTrue(ArmPositionsCommands.coneThird(arm));
                 operatorController.povDown().onTrue(ArmPositionsCommands.floor(arm));
                 operatorController.povRight().onTrue(ArmPositionsCommands.restElbow(arm));
+                operatorController.start().onTrue(ArmPositionsCommands.floorTouchAndGo(arm));
  
                 operatorController.leftBumper().onTrue(new InstantCommand(
                                 () -> arm.setEmergencyMode(!arm.getEmergencyMode())));

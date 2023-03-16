@@ -70,6 +70,34 @@ public class ArmPositionsCommands {
                 false);
     }
 
+    public static Command floorTouchAndGo(Arm arm) {
+        return new MoveArmToPosition(
+                arm,
+                ArmConstants.ANGLE_TOUCH_AND_GO_SHOULDER,
+                MoveArmToPosition.Joint.SHOULDER,
+                false)
+                .andThen(new MoveArmToPosition(
+                    arm,
+                    ArmConstants.ANGLE_TOUCH_AND_GO_ELBOW,
+                    MoveArmToPosition.Joint.ELBOW,
+                    false));
+        // return new MoveArmToPosition(
+        //         arm,
+        //         ArmConstants.ANGLE_TOUCH_AND_GO_FREE_SHOULDER,
+        //         MoveArmToPosition.Joint.SHOULDER,
+        //         false)
+        //         .andThen(new MoveArmToPosition(
+        //             arm,
+        //             ArmConstants.ANGLE_TOUCH_AND_GO_ELBOW,
+        //             MoveArmToPosition.Joint.ELBOW,
+        //             false))
+        //             .andThen(new MoveArmToPosition(
+        //                 arm, 
+        //                 ArmConstants.ANGLE_TOUCH_AND_GO_SHOULDER, 
+        //                 MoveArmToPosition.Joint.SHOULDER, 
+        //                 false));
+    }
+
     public static Command closeElbow(Arm arm) {
         return new MoveArmToPosition(
             arm,

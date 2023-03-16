@@ -60,7 +60,7 @@ public final class Constants {
     }
 
     public static final class GetOnChargeStationAuto {
-      public static final double DRIVE_SPEED = 0.6;
+      public static final double DRIVE_SPEED = 0.8;
       public static final double FINISH_ANGLE = 17;
       public static final double TIMEOUT_SECONDS = 4.5;
     }
@@ -70,12 +70,13 @@ public final class Constants {
       public static final double SPEED_TO_CLOSER_CENTER = 0.6;
       public static final double DISTANCE_TO_CLOSER_CENTER = 0.4;
       public static final double GET_CLOSER_TO_CENTER_TIMEOUT = 2;
+      
+      public static final double MAX_SPEED = 0.27;
 
-      public static final double KP = 0.019;
+      public static final double KP = 0.021;
       public static final double KI = 0;
-      public static final double KD = 0.0;
+      public static final double KD = 0.003;
 
-      public static final double TARGET_ANGLE = 0;
       public static final double POSITION_TOLERANCE = 1.5;
       public static final double VELOCITY_TOLERANCE = 0.2;
     }

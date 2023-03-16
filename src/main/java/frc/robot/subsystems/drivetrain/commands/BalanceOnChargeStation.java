@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drivetrain.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -9,8 +10,8 @@ public class BalanceOnChargeStation extends CommandBase {
   private final Drivetrain drivetrain;
   private final double POSITION_TOLERANCE = Constants.Autos.BalanceOnChargeStationAuto.POSITION_TOLERANCE;
   private final double VELOCITY_TOLERANCE = Constants.Autos.BalanceOnChargeStationAuto.VELOCITY_TOLERANCE;
-  private final double TARGET_ANGLE = Constants.Autos.BalanceOnChargeStationAuto.TARGET_ANGLE;
   private final boolean IS_REVERSED = Constants.Autos.BalanceOnChargeStationAuto.IS_REVERSED;
+  private final double MAX_SPEED = Constants.Autos.BalanceOnChargeStationAuto.MAX_SPEED;
 
 
   private final PIDController pidController = new PIDController(
@@ -23,7 +24,7 @@ public class BalanceOnChargeStation extends CommandBase {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     pidController.setTolerance(POSITION_TOLERANCE, VELOCITY_TOLERANCE);
-    pidController.setSetpoint(TARGET_ANGLE);
+    pidController.setSetpoint(0);
   }
 
   @Override
@@ -35,7 +36,8 @@ public class BalanceOnChargeStation extends CommandBase {
   public void execute() {
     double pitch = (IS_REVERSED ? -1 : 1) * drivetrain.getPitch();
     double pidResult = pidController.calculate(pitch);
-    drivetrain.setSpeed(pidResult, pidResult);
+    double speed = MathUtil.clamp(pidResult, -MAX_SPEED, MAX_SPEED);
+    drivetrain.setSpeed(speed, speed);
   }
 
   @Override
