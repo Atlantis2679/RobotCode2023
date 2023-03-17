@@ -7,8 +7,6 @@ import frc.robot.subsystems.arm.commands.ArmController;
 import frc.robot.subsystems.arm.commands.ArmPositionsCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.commands.ArcadeDrive;
-import frc.robot.subsystems.drivetrain.commands.DriveToDistance;
-import frc.robot.subsystems.drivetrain.commands.TurnByDegree;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.commands.IntakeController;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -38,13 +36,13 @@ public class RobotContainer {
                                 "Release Cone",
                                 () -> Autos.releaseCone(intake));
                 
-                firstAutoCommandChooser.setDefaultOption(
-                                "Release Cone Second",
-                                () -> Autos.releaseConeSecond(arm, intake, drivetrain));
+                // firstAutoCommandChooser.setDefaultOption(
+                //                 "Release Cone Second",
+                //                 () -> Autos.releaseConeSecond(arm, intake, drivetrain));
 
-                firstAutoCommandChooser.setDefaultOption(
-                                "Release Cone Third",
-                                () -> Autos.releaseConeThird(arm, intake, drivetrain));
+                // firstAutoCommandChooser.setDefaultOption(
+                //                 "Release Cone Third",
+                //                 () -> Autos.releaseConeThird(arm, intake, drivetrain));
 
                 firstAutoCommandChooser.addOption(
                                 "Release Cube",
@@ -110,12 +108,12 @@ public class RobotContainer {
                 operatorController.a().onTrue(ArmPositionsCommands.rest(arm));
                 operatorController.x().onTrue(ArmPositionsCommands.cubeSecond(arm));
                 operatorController.y().onTrue(ArmPositionsCommands.cubeThird(arm));
-                
                 operatorController.b().onTrue(ArmPositionsCommands.feeder(arm));
                 operatorController.povLeft().onTrue(ArmPositionsCommands.coneSecond(arm));
                 operatorController.povUp().onTrue(ArmPositionsCommands.coneThird(arm));
                 operatorController.povDown().onTrue(ArmPositionsCommands.floor(arm));
                 operatorController.povRight().onTrue(ArmPositionsCommands.restElbow(arm));
+                operatorController.start().onTrue(ArmPositionsCommands.floorTouchAndGo(arm));
  
                 operatorController.leftBumper().onTrue(new InstantCommand(
                                 () -> arm.setEmergencyMode(!arm.getEmergencyMode())));
@@ -126,10 +124,7 @@ public class RobotContainer {
                                 }, arm));
 
                 
-                operatorController.rightStick().onTrue(new InstantCommand(() -> arm.resetEncoders()));
-
-                driverController.a().onTrue(new DriveToDistance(drivetrain, -0.15));
-
+                // operatorController.rightStick().onTrue(new InstantCommand(() -> arm.resetEncoders()));
         }
 
         public Command getAutonomousCommand() {

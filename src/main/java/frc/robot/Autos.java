@@ -1,10 +1,12 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController.Button;
+import java.lang.constant.DirectMethodHandleDesc;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.commands.ArmController;
 import frc.robot.subsystems.arm.commands.ArmPositionsCommands;
@@ -34,7 +36,8 @@ public final class Autos {
   public static Command releaseConeSecond(Arm arm, Intake intake, Drivetrain drivetrain) {
     return driveForDistance(drivetrain, 0.20, 0.3, true)
         .andThen(freeArm(arm))
-        .andThen(ArmPositionsCommands.coneSecond(arm).withTimeout(Constants.Autos.releaseConeSecond.TIMEOUT_SECONDS_RAISE))
+        .andThen(
+            ArmPositionsCommands.coneSecond(arm).withTimeout(Constants.Autos.releaseConeSecond.TIMEOUT_SECONDS_RAISE))
         .andThen(releaseCone(intake))
         .andThen(ArmPositionsCommands.rest(arm).withTimeout(Constants.Autos.releaseCubeSecond.TIMEOUT_SECONDS_LOWER));
   }
@@ -42,7 +45,8 @@ public final class Autos {
   public static Command releaseConeThird(Arm arm, Intake intake, Drivetrain drivetrain) {
     return new DriveToDistance(drivetrain, Constants.Autos.releaseConeThird.DRIVE_TO_DISTANCE_START)
         .alongWith(freeArm(arm))
-        .andThen(ArmPositionsCommands.coneThird(arm).withTimeout(Constants.Autos.releaseConeThird.TIMEOUT_SECONDS_RAISE))
+        .andThen(
+            ArmPositionsCommands.coneThird(arm).withTimeout(Constants.Autos.releaseConeThird.TIMEOUT_SECONDS_RAISE))
         .andThen(new DriveToDistance(drivetrain, Constants.Autos.releaseConeThird.DRIVE_TO_DISTANCE_BEFORE_RELEASE))
         .andThen(new WaitCommand(0.1))
         .andThen(releaseCone(intake))
@@ -84,29 +88,59 @@ public final class Autos {
   }
 
   public static Command balanceChargeStation(Drivetrain drivetrain, Arm arm) {
-    return new GetOnChargeStation(drivetrain).withTimeout(Constants.Autos.GetOnChargeStationAuto.TIMEOUT_SECONDS)
+    return new InstantCommand(() -> {
+      arm.setSpeedShoulder(0);
+      arm.setSpeedElbow(0);
+    }, arm).andThen(
+        new GetOnChargeStation(drivetrain).withTimeout(Constants.Autos.GetOnChargeStationAuto.TIMEOUT_SECONDS))
+        .andThen(driveForDistance(
+            drivetrain,
+            Constants.Autos.BalanceOnChargeStationAuto.DISTANCE_TO_CLOSER_CENTER,
+            Constants.Autos.BalanceOnChargeStationAuto.SPEED_TO_CLOSER_CENTER,
+            Constants.Autos.BalanceOnChargeStationAuto.IS_REVERSED)
+            .withTimeout(Constants.Autos.BalanceOnChargeStationAuto.GET_CLOSER_TO_CENTER_TIMEOUT))
         .andThen(new BalanceOnChargeStation(drivetrain));
+    // return new InstantCommand(() -> {
+    //   arm.setSpeedShoulder(0);
+    //   arm.setSpeedElbow(0);
+    // }, arm).andThen(
+    //     new GetOnChargeStation(drivetrain).withTimeout(Constants.Autos.GetOnChargeStationAuto.TIMEOUT_SECONDS))
+    //     .andThen(driveForDistance(
+    //         drivetrain,
+    //         Constants.Autos.BalanceOnChargeStationAuto.DISTANCE_TO_CLOSER_CENTER,
+    //         Constants.Autos.BalanceOnChargeStationAuto.SPEED_TO_CLOSER_CENTER,
+    //         Constants.Autos.BalanceOnChargeStationAuto.IS_REVERSED)
+    //         .withTimeout(Constants.Autos.BalanceOnChargeStationAuto.GET_CLOSER_TO_CENTER_TIMEOUT))
+    //     .andThen(() -> drivetrain.setSpeed(-0.2, -0.2), drivetrain)
+    //     .andThen(new WaitUntilCommand(() -> drivetrain.getPitch() > -10))
+    //     .andThen(() -> drivetrain.setSpeed(0, 0))
+    //     .andThen(new WaitCommand(0.1))
+    //     .andThen(new WaitCommand(0.5)).until(() -> Math.abs(drivetrain.getPitch()) < 7)
+    //     .andThen(new BalanceOnChargeStation(drivetrain));
   }
 
-  public static Command driveForDistance(Drivetrain drivetrain, double metersDistance, double speed, boolean isReversed){
+  public static Command driveForDistance(Drivetrain drivetrain, double metersDistance, double speed,
+      boolean isReversed) {
     final double speedDemand = speed * (isReversed ? -1 : 1);
 
     return new FunctionalCommand(() -> {
       drivetrain.resetEncoders();
       drivetrain.setSpeed(speedDemand, speedDemand);
     },
-    () -> {},
-    interrupted -> drivetrain.setSpeed(0, 0),
-    () -> {
-      if(isReversed) {
-        return drivetrain.getLeftDistanceMeters() < -metersDistance
-        && drivetrain.getRightDistanceMeters() < -metersDistance;
-      }
+        () -> {
+        },
+        interrupted -> {
+        },
+        () -> {
+          if (isReversed) {
+            return drivetrain.getLeftDistanceMeters() < -metersDistance
+                && drivetrain.getRightDistanceMeters() < -metersDistance;
+          }
 
-      return drivetrain.getLeftDistanceMeters() > metersDistance 
-      && drivetrain.getRightDistanceMeters() > metersDistance;
-    },
-    drivetrain);
+          return drivetrain.getLeftDistanceMeters() > metersDistance
+              && drivetrain.getRightDistanceMeters() > metersDistance;
+        },
+        drivetrain);
   }
 
   private Autos() {
