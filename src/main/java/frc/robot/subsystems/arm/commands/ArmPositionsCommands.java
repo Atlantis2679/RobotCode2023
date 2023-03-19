@@ -3,7 +3,6 @@ package frc.robot.subsystems.arm.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmConstants;
-import frc.robot.subsystems.arm.commands.MoveArmToPosition.Joint;
 
 public class ArmPositionsCommands {
     public static Command rest(Arm arm) {
@@ -11,14 +10,6 @@ public class ArmPositionsCommands {
                 arm,
                 ArmConstants.ANGLE_REST_SHOULDER,
                 ArmConstants.ANGLE_REST_ELBOW,
-                true);
-    }
-
-    public static Command restElbow(Arm arm) {
-        return new MoveArmToPosition(
-                arm,
-                ArmConstants.ANGLE_REST_ELBOW,
-                Joint.ELBOW,
                 true);
     }
 
@@ -74,35 +65,7 @@ public class ArmPositionsCommands {
         return new MoveArmToPosition(
                 arm,
                 ArmConstants.ANGLE_TOUCH_AND_GO_SHOULDER,
-                MoveArmToPosition.Joint.SHOULDER,
-                false)
-                .andThen(new MoveArmToPosition(
-                    arm,
-                    ArmConstants.ANGLE_TOUCH_AND_GO_ELBOW,
-                    MoveArmToPosition.Joint.ELBOW,
-                    false));
-        // return new MoveArmToPosition(
-        //         arm,
-        //         ArmConstants.ANGLE_TOUCH_AND_GO_FREE_SHOULDER,
-        //         MoveArmToPosition.Joint.SHOULDER,
-        //         false)
-        //         .andThen(new MoveArmToPosition(
-        //             arm,
-        //             ArmConstants.ANGLE_TOUCH_AND_GO_ELBOW,
-        //             MoveArmToPosition.Joint.ELBOW,
-        //             false))
-        //             .andThen(new MoveArmToPosition(
-        //                 arm, 
-        //                 ArmConstants.ANGLE_TOUCH_AND_GO_SHOULDER, 
-        //                 MoveArmToPosition.Joint.SHOULDER, 
-        //                 false));
-    }
-
-    public static Command closeElbow(Arm arm) {
-        return new MoveArmToPosition(
-            arm,
-            ArmConstants.ANGLE_REST_ELBOW,
-            MoveArmToPosition.Joint.ELBOW,
-            true);
+                ArmConstants.ANGLE_TOUCH_AND_GO_ELBOW,
+                false);
     }
 }

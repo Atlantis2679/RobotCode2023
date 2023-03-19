@@ -19,17 +19,18 @@ public final class ArmConstants {
   public static final double SPEED_LIMIT_SHOULDER = 0.8;
   public static final double SPEED_LIMIT_ELBOW = 0.7;
 
-  public static final double ANGLE_SECOND_CONE_SHOULDER = -20, ANGLE_SECOND_CONE_ELBOW = 30;  
-  public static final double ANGLE_THIRD_CONE_SHOULDER = 5, ANGLE_THIRD_CONE_ELBOW = 30;  
-  public static final double ANGLE_SECOND_CUBE_SHOULDER = -30, ANGLE_SECOND_CUBE_ELBOW = 25;  
-  public static final double ANGLE_THIRD_CUBE_SHOULDER = 0, ANGLE_THIRD_CUBE_ELBOW = 45;  
+  public static final double ANGLE_SECOND_CONE_SHOULDER = -20, ANGLE_SECOND_CONE_ELBOW = 30;
+  public static final double ANGLE_THIRD_CONE_SHOULDER = 5, ANGLE_THIRD_CONE_ELBOW = 30;
+  public static final double ANGLE_SECOND_CUBE_SHOULDER = -30, ANGLE_SECOND_CUBE_ELBOW = 25;
+  public static final double ANGLE_THIRD_CUBE_SHOULDER = 0, ANGLE_THIRD_CUBE_ELBOW = 45;
   public static final double ANGLE_REST_SHOULDER = -85, ANGLE_REST_ELBOW = 155;
   public static final double ANGLE_FEEDER_SHOULDER = 5, ANGLE_FEEDER_ELBOW = 5;
   public static final double ANGLE_FLOOR_SHOULDER = -35, ANGLE_FLOOR_ELBOW = -90;
 
-  public static final double ANGLE_TOUCH_AND_GO_FREE_SHOULDER = -50;
-  public static final double ANGLE_TOUCH_AND_GO_SHOULDER = -68, ANGLE_TOUCH_AND_GO_ELBOW = 0;
+  public static final double ANGLE_TOUCH_AND_GO_SHOULDER = -70, ANGLE_TOUCH_AND_GO_ELBOW = -5;
 
+  public static final double LOCKED_MAX_SHOULDER_ANGLE = -75;
+  public static final double LOCKED_MIN_ELBOW_ANGLE = 115;
 
   public static final class Feedforward {
     public static final class Shoulder {

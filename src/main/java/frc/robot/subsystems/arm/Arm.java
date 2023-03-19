@@ -29,6 +29,10 @@ public class Arm extends SubsystemBase {
     private double encoderElbowZeroAngle = ArmConstants.ENCODER_ELBOW_ZERO_ANGLE;
     private double ENCODER_MAX_POSITIVE_ELBOW = ArmConstants.ENCODER_MAX_POSITIVE_ELBOW;
 
+    private double shoulderAngle;
+    private double elbowAngle;
+    private double elbowAngleRelativeToShoulder;
+
     private final ArmFeedforward feedForwardShoulder = new ArmFeedforward(
             ArmConstants.Feedforward.Shoulder.KS,
             ArmConstants.Feedforward.Shoulder.KG,
@@ -79,7 +83,17 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
+        shoulderAngle = normalizeAbsoluteAngle(
+                -encoderShoulder.getAbsolutePosition(),
+                encoderShoulderZeroAngle,
+                ENCODER_MAX_POSITIVE_SHOULDER);
 
+        elbowAngleRelativeToShoulder = normalizeAbsoluteAngle(
+                encoderElbow.getAbsolutePosition(),
+                encoderElbowZeroAngle,
+                ENCODER_MAX_POSITIVE_ELBOW);
+
+        elbowAngle = elbowAngleRelativeToShoulder + shoulderAngle;
 
         SmartDashboard.putNumber("arm angle shoulder", getShoulderAngle());
         SmartDashboard.putNumber("arm angle elbow", getElbowAngle(false));
@@ -125,25 +139,36 @@ public class Arm extends SubsystemBase {
 
         angle *= 360;
         angle -= zeroAngle;
-        if(angle > maxPositive) angle -= 360;
-        if(angle < maxNegative) angle += 360;
+        if (angle > maxPositive)
+            angle -= 360;
+        if (angle < maxNegative)
+            angle += 360;
 
         return angle;
     }
 
     public double getShoulderAngle() {
-        return normalizeAbsoluteAngle(
-                -encoderShoulder.getAbsolutePosition(),
-                encoderShoulderZeroAngle,
-                ENCODER_MAX_POSITIVE_SHOULDER);
+        return shoulderAngle;
     }
 
     public double getElbowAngle(boolean isRelativeToShoulder) {
-        return normalizeAbsoluteAngle(
-                encoderElbow.getAbsolutePosition(),
-                encoderElbowZeroAngle,
-                ENCODER_MAX_POSITIVE_ELBOW)
-                + (isRelativeToShoulder ? 0 : getShoulderAngle());
+        return isRelativeToShoulder ? elbowAngleRelativeToShoulder : elbowAngle;
+    }
+
+    public enum LockedStates {
+        UNLOCKED,
+        LOCKED,
+        BADLY_CLOSED_OUT_OF_LOCK
+    }
+
+    public LockedStates getLockedState() {
+        if (getShoulderAngle() <= ArmConstants.LOCKED_MAX_SHOULDER_ANGLE) {
+            if (getElbowAngle(true) >= ArmConstants.LOCKED_MIN_ELBOW_ANGLE) {
+                return LockedStates.LOCKED;
+            }
+            return LockedStates.BADLY_CLOSED_OUT_OF_LOCK;
+        }
+        return LockedStates.UNLOCKED;
     }
 
     public ArmValues<Double> calculateFeedforward(
@@ -159,7 +184,8 @@ public class Arm extends SubsystemBase {
 
         ArmValues<Double> voltages = new ArmValues<>(
                 feedForwardShoulder.calculate(Math.toRadians(shoulderAngle), shoulderVelocity),
-                feedforwardElbow.calculate(Math.toRadians(elbowAngle + (isRelativeToShoulder ? getShoulderAngle() : 0)), elbowVelocity));
+                feedforwardElbow.calculate(Math.toRadians(elbowAngle + (isRelativeToShoulder ? getShoulderAngle() : 0)),
+                        elbowVelocity));
 
         if (usePID) {
             voltages.shoulder += pidControllerShoulder.calculate(getShoulderAngle(), shoulderAngle);
