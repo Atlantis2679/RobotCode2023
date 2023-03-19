@@ -118,10 +118,9 @@ public class RobotContainer {
                                 () -> arm.setEmergencyMode(!arm.getEmergencyMode())));
                 operatorController.rightBumper().whileTrue(
                                 new RunCommand(() -> {
-                                        arm.setSpeedShoulder(0);
-                                        arm.setSpeedElbow(0);
+                                        arm.setVoltageElbow(0);
+                                        arm.setVoltageElbow(0);
                                 }, arm));
-
                 
                 // operatorController.rightStick().onTrue(new InstantCommand(() -> arm.resetEncoders()));
         }

@@ -15,7 +15,6 @@ public final class ArmConstants {
   public static final int CURRENT_LIMIT_SHOULDER_AMP = 20;
   public static final int CURRENT_LIMIT_ELBOW_AMP = 20;
 
-  // public static final double SPEED_LIMIT_SHOULDER = 0.6;
   public static final double SPEED_LIMIT_SHOULDER = 0.8;
   public static final double SPEED_LIMIT_ELBOW = 0.7;
 
@@ -45,8 +44,6 @@ public final class ArmConstants {
 
       public static final double TOLERANCE_POSITION = 10;
       public static final double TOLERANCE_VELOCITY = 2;
-      // public static final double MAX_VELOCITY = 40;
-      // public static final double MAX_ACCELERATION = 100;
       public static final double MAX_VELOCITY = 45;
       public static final double MAX_ACCELERATION = 110;
     }
@@ -69,7 +66,6 @@ public final class ArmConstants {
   }
 
   public static final class Controller {
-    // public static final double MULTIPLIER_SHOULDER = 0.4;
     public static final double MULTIPLIER_SHOULDER = 0.5;
     public static final double MULTIPLIER_ELBOW = 0.2;
   }

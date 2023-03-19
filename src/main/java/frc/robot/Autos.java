@@ -73,8 +73,8 @@ public final class Autos {
 
   public static Command balanceChargeStation(Drivetrain drivetrain, Arm arm) {
     return new InstantCommand(() -> {
-      arm.setSpeedShoulder(0);
-      arm.setSpeedElbow(0);
+      arm.setVoltageShoulder(0);
+      arm.setVoltageElbow(0);
     }, arm).andThen(
         new GetOnChargeStation(drivetrain).withTimeout(Constants.Autos.GetOnChargeStationAuto.TIMEOUT_SECONDS))
         .andThen(driveForDistance(
