@@ -9,7 +9,12 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.commands.ArcadeDrive;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.commands.IntakeController;
+
+import org.opencv.video.Video;
+
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -30,7 +35,9 @@ public class RobotContainer {
         private final SendableChooser<CommandSupplier> secondAutoCommandChooser = new SendableChooser<>();
 
         public RobotContainer() {
-                CameraServer.startAutomaticCapture();
+                UsbCamera camera = CameraServer.startAutomaticCapture();
+                camera.setVideoMode(VideoMode.PixelFormat.kYUYV, 640, 360, 30);
+
                 configureBindings();
                 firstAutoCommandChooser.setDefaultOption(
                                 "Release Cone",

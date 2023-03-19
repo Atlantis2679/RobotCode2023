@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -132,7 +131,7 @@ public class Arm extends SubsystemBase {
     public void setVoltageShoulder(double demand) {
         SmartDashboard.putNumber("shoulder voltage demand", demand);
 
-        if (lockedState == LockedStates.BADLY_CLOSED_OUT_OF_LOCK)
+        if (lockedState == LockedStates.BADLY_CLOSED_OUT_OF_LOCK && demand < 0)
             demand = 0;
         motorShoulder.setVoltage(MathUtil.clamp(demand, -12 * SPEED_LIMIT_SHOULDER, 12 * SPEED_LIMIT_SHOULDER));
     }
