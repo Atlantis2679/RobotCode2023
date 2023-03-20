@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,7 +19,6 @@ public class Arm extends SubsystemBase {
 
     private final DutyCycleEncoder encoderShoulder = new DutyCycleEncoder(ArmConstants.ENCODER_SHOULDER_ID);
     private final DutyCycleEncoder encoderElbow = new DutyCycleEncoder(ArmConstants.ENCODER_ELBOW_ID);
-    private final DigitalInput limitSwitch = new DigitalInput(ArmConstants.LIMIT_SWITCH_ID);
     private final double SPEED_LIMIT_SHOULDER = ArmConstants.SPEED_LIMIT_SHOULDER;
     private final double SPEED_LIMIT_ELBOW = ArmConstants.SPEED_LIMIT_ELBOW;
 
@@ -28,6 +26,27 @@ public class Arm extends SubsystemBase {
     private double ENCODER_MAX_POSITIVE_SHOULDER = ArmConstants.ENCODER_MAX_POSITIVE_SHOULDER;
     private double encoderElbowZeroAngle = ArmConstants.ENCODER_ELBOW_ZERO_ANGLE;
     private double ENCODER_MAX_POSITIVE_ELBOW = ArmConstants.ENCODER_MAX_POSITIVE_ELBOW;
+
+    private double shoulderAngle;
+    private double elbowAngle;
+
+    public enum LockedStates {
+        UNLOCKED,
+        LOCKED,
+        BADLY_CLOSED_OUT_OF_LOCK;
+
+        public static LockedStates getFromAngles(double shoulderAngle, double elbowAngleRelativeToShoulder) {
+            if (shoulderAngle <= ArmConstants.LOCKED_MAX_SHOULDER_ANGLE) {
+                if (elbowAngleRelativeToShoulder >= ArmConstants.LOCKED_MIN_ELBOW_ANGLE) {
+                    return LockedStates.LOCKED;
+                }
+                return LockedStates.BADLY_CLOSED_OUT_OF_LOCK;
+            }
+            return LockedStates.UNLOCKED;
+        }
+    }
+
+    private LockedStates lockedState;
 
     private final ArmFeedforward feedForwardShoulder = new ArmFeedforward(
             ArmConstants.Feedforward.Shoulder.KS,
@@ -79,14 +98,22 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
+        shoulderAngle = normalizeAbsoluteAngle(
+                -encoderShoulder.getAbsolutePosition(),
+                encoderShoulderZeroAngle,
+                ENCODER_MAX_POSITIVE_SHOULDER);
 
+        elbowAngle = normalizeAbsoluteAngle(
+                encoderElbow.getAbsolutePosition(),
+                encoderElbowZeroAngle,
+                ENCODER_MAX_POSITIVE_ELBOW);
+
+        lockedState = LockedStates.getFromAngles(shoulderAngle, elbowAngle);
 
         SmartDashboard.putNumber("arm angle shoulder", getShoulderAngle());
-        SmartDashboard.putNumber("arm angle elbow", getElbowAngle(false));
-        SmartDashboard.putNumber("arm angle elbow relative to shoulder", getElbowAngle(true));
+        SmartDashboard.putNumber("arm angle elbow", getElbowAngle());
         SmartDashboard.putNumber("arm shoulder zero angle", encoderShoulderZeroAngle);
         SmartDashboard.putNumber("arm elbow zero angle", encoderElbowZeroAngle);
-        SmartDashboard.putBoolean("arm limit switch", !limitSwitch.get());
         SmartDashboard.putBoolean("arm is emeregency mode", isEmergencyMode);
         SmartDashboard.putBoolean("arm is shoulder pid at setpoint", shoulderPIDAtSetpoint());
         SmartDashboard.putBoolean("arm is elbow pid at setpoint", elbowPIDAtSetpoint());
@@ -97,26 +124,20 @@ public class Arm extends SubsystemBase {
         encoderElbowZeroAngle = encoderElbow.getAbsolutePosition() * 360;
     }
 
-    public void setSpeedShoulder(double demand) {
-        motorShoulder.set(!isEmergencyMode && !limitSwitch.get() && demand < 0
-                ? 0
-                : MathUtil.clamp(demand, -SPEED_LIMIT_SHOULDER, SPEED_LIMIT_SHOULDER));
-    }
-
-    public void setSpeedElbow(double demand) {
-        motorElbow.set(MathUtil.clamp(demand, -SPEED_LIMIT_ELBOW, SPEED_LIMIT_ELBOW));
-    }
-
     public void setVoltageShoulder(double demand) {
         SmartDashboard.putNumber("shoulder voltage demand", demand);
 
-        motorShoulder.setVoltage(!isEmergencyMode && !limitSwitch.get() && demand < 0
-                ? 0
-                : MathUtil.clamp(demand, -12 * SPEED_LIMIT_SHOULDER, 12 * SPEED_LIMIT_SHOULDER));
+        if (lockedState == LockedStates.BADLY_CLOSED_OUT_OF_LOCK && demand < 0)
+            demand = 0;
+        motorShoulder.setVoltage(MathUtil.clamp(demand, -12 * SPEED_LIMIT_SHOULDER, 12 * SPEED_LIMIT_SHOULDER));
     }
 
     public void setVoltageElbow(double demand) {
         SmartDashboard.putNumber("elbow voltage demand", demand);
+
+        if (lockedState == LockedStates.LOCKED && demand < 0)
+            demand = 0;
+
         motorElbow.setVoltage(MathUtil.clamp(demand, -12 * SPEED_LIMIT_ELBOW, 12 * SPEED_LIMIT_ELBOW));
     }
 
@@ -125,25 +146,24 @@ public class Arm extends SubsystemBase {
 
         angle *= 360;
         angle -= zeroAngle;
-        if(angle > maxPositive) angle -= 360;
-        if(angle < maxNegative) angle += 360;
+        if (angle > maxPositive)
+            angle -= 360;
+        if (angle < maxNegative)
+            angle += 360;
 
         return angle;
     }
 
     public double getShoulderAngle() {
-        return normalizeAbsoluteAngle(
-                -encoderShoulder.getAbsolutePosition(),
-                encoderShoulderZeroAngle,
-                ENCODER_MAX_POSITIVE_SHOULDER);
+        return shoulderAngle;
     }
 
-    public double getElbowAngle(boolean isRelativeToShoulder) {
-        return normalizeAbsoluteAngle(
-                encoderElbow.getAbsolutePosition(),
-                encoderElbowZeroAngle,
-                ENCODER_MAX_POSITIVE_ELBOW)
-                + (isRelativeToShoulder ? 0 : getShoulderAngle());
+    public double getElbowAngle() {
+        return elbowAngle;
+    }
+
+    public LockedStates getLockedState() {
+        return lockedState;
     }
 
     public ArmValues<Double> calculateFeedforward(
@@ -151,19 +171,19 @@ public class Arm extends SubsystemBase {
             double elbowAngle,
             double shoulderVelocity,
             double elbowVelocity,
-            boolean usePID,
-            boolean isRelativeToShoulder) {
+            boolean usePID) {
 
         if (isEmergencyMode)
             return new ArmValues<Double>(0.0, 0.0);
 
         ArmValues<Double> voltages = new ArmValues<>(
                 feedForwardShoulder.calculate(Math.toRadians(shoulderAngle), shoulderVelocity),
-                feedforwardElbow.calculate(Math.toRadians(elbowAngle + (isRelativeToShoulder ? getShoulderAngle() : 0)), elbowVelocity));
+                feedforwardElbow.calculate(Math.toRadians(elbowAngle + shoulderAngle),
+                        elbowVelocity));
 
         if (usePID) {
-            voltages.shoulder += pidControllerShoulder.calculate(getShoulderAngle(), shoulderAngle);
-            voltages.elbow += pidControllerElbow.calculate(getElbowAngle(isRelativeToShoulder), elbowAngle);
+            voltages.shoulder += pidControllerShoulder.calculate(this.shoulderAngle, shoulderAngle);
+            voltages.elbow += pidControllerElbow.calculate(this.elbowAngle, elbowAngle);
         }
 
         return voltages;

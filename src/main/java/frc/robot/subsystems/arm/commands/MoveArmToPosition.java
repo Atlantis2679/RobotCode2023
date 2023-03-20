@@ -16,82 +16,117 @@ public class MoveArmToPosition extends CommandBase {
     private double targetPositionShoulder;
     private double targetPositionElbow;
 
-    private boolean shouldMoveShoulder = true;
-    private boolean shouldMoveElbow = true;
-    private boolean isElbowRelativeToShoulder = false;
+    private boolean isElbowMoving = false;
+    private boolean isShoulderMoving = false;
 
-    private final Timer timer = new Timer();
+    private PassLockDirection passLockDirection;
 
-    public enum Joint {
-        SHOULDER,
-        ELBOW
-    }
+    private final Timer shoulderTimer = new Timer();
+    private final Timer elbowTimer = new Timer();
 
-    public MoveArmToPosition(Arm arm, double targetPosition, Joint joint, boolean isElbowRelativeToShoulder) {
-        this(arm,
-                joint == Joint.SHOULDER ? targetPosition : 0,
-                joint == Joint.ELBOW ? targetPosition : 0,
-                isElbowRelativeToShoulder);
+    public enum PassLockDirection {
+        UNLOCKING,
+        LOCKING,
+        NONE;
 
-        if (joint == Joint.ELBOW) {
-            shouldMoveShoulder = false;
-        } else {
-            shouldMoveElbow = false;
+        public static PassLockDirection getFromShoulderAngles(double initialAngle, double goalAngle) {
+            if (initialAngle < ArmConstants.LOCKED_MAX_SHOULDER_ANGLE
+                    && goalAngle > ArmConstants.LOCKED_MAX_SHOULDER_ANGLE)
+                return UNLOCKING;
+            if (initialAngle > ArmConstants.LOCKED_MAX_SHOULDER_ANGLE
+                    && goalAngle < ArmConstants.LOCKED_MAX_SHOULDER_ANGLE)
+                return LOCKING;
+            return NONE;
         }
-
     }
 
-    public MoveArmToPosition(Arm arm, double targetPositionShoulder, double targetPositionElbow, boolean isElbowRelativeToShoulder) {
+    public MoveArmToPosition(Arm arm, double targetPositionShoulder, double targetPositionElbow) {
         this.arm = arm;
         addRequirements(arm);
 
-        this.isElbowRelativeToShoulder = isElbowRelativeToShoulder;
         this.targetPositionShoulder = targetPositionShoulder;
         this.targetPositionElbow = targetPositionElbow;
     }
 
     @Override
     public void initialize() {
-        timer.restart();
+        passLockDirection = PassLockDirection.getFromShoulderAngles(arm.getShoulderAngle(), targetPositionShoulder);
+        if (passLockDirection == PassLockDirection.LOCKING) {
+            elbowTimer.restart();
+            isShoulderMoving = false;
+            isElbowMoving = true;
+        } else if (passLockDirection == PassLockDirection.UNLOCKING) {
+            shoulderTimer.restart();
+            isShoulderMoving = true;
+            isElbowMoving = false;
+        } else {
+            shoulderTimer.restart();
+            elbowTimer.restart();
+            isShoulderMoving = true;
+            isElbowMoving = true;
+        }
         arm.resetPIDs();
 
-        if (shouldMoveShoulder)
-            trapezoidProfileShoulder = new TrapezoidProfile(
-                    new TrapezoidProfile.Constraints(
-                            ArmConstants.Feedforward.Shoulder.MAX_VELOCITY,
-                            ArmConstants.Feedforward.Shoulder.MAX_ACCELERATION),
-                    new TrapezoidProfile.State(targetPositionShoulder, 0),
-                    new TrapezoidProfile.State(arm.getShoulderAngle(), 0));
+        trapezoidProfileShoulder = new TrapezoidProfile(
+                new TrapezoidProfile.Constraints(
+                        ArmConstants.Feedforward.Shoulder.MAX_VELOCITY,
+                        ArmConstants.Feedforward.Shoulder.MAX_ACCELERATION),
+                new TrapezoidProfile.State(targetPositionShoulder, 0),
+                new TrapezoidProfile.State(arm.getShoulderAngle(), 0));
 
-        if (shouldMoveElbow)
-            trapezoidProfileElbow = new TrapezoidProfile(
-                    new TrapezoidProfile.Constraints(
-                            ArmConstants.Feedforward.Elbow.MAX_VELOCITY,
-                            ArmConstants.Feedforward.Elbow.MAX_ACCELERATION),
-                    new TrapezoidProfile.State(targetPositionElbow, 0),
-                    new TrapezoidProfile.State(arm.getElbowAngle(isElbowRelativeToShoulder), 0));
+        trapezoidProfileElbow = new TrapezoidProfile(
+                new TrapezoidProfile.Constraints(
+                        ArmConstants.Feedforward.Elbow.MAX_VELOCITY,
+                        ArmConstants.Feedforward.Elbow.MAX_ACCELERATION),
+                new TrapezoidProfile.State(targetPositionElbow, 0),
+                new TrapezoidProfile.State(arm.getElbowAngle(), 0));
     }
 
     @Override
     public void execute() {
-        TrapezoidProfile.State setpointsShoulder = shouldMoveShoulder
-                ? trapezoidProfileShoulder.calculate(timer.get())
-                : new TrapezoidProfile.State(arm.getShoulderAngle(), 0);
+        if (passLockDirection == PassLockDirection.LOCKING
+                && !isShoulderMoving
+                && (trapezoidProfileElbow.totalTime() - elbowTimer.get()) <= trapezoidProfileShoulder
+                        .timeLeftUntil(ArmConstants.LOCKED_MAX_SHOULDER_ANGLE)) {
 
-        TrapezoidProfile.State setpointsElbow = shouldMoveElbow
-                ? trapezoidProfileElbow.calculate(timer.get())
-                : new TrapezoidProfile.State(arm.getElbowAngle(isElbowRelativeToShoulder), 0);
+            shoulderTimer.restart();
+            isShoulderMoving = true;
+        }
+
+        if (passLockDirection == PassLockDirection.UNLOCKING
+                && !isElbowMoving
+                && arm.getLockedState() == Arm.LockedStates.UNLOCKED) {
+
+            elbowTimer.restart();
+            isElbowMoving = true;
+        }
+
+        TrapezoidProfile.State setpointsShoulder = getShoulderSetpoints();
+        TrapezoidProfile.State setpointsElbow = getElbowSetpoints();
 
         ArmValues<Double> feedforwardResults = arm.calculateFeedforward(
                 setpointsShoulder.position,
                 setpointsElbow.position,
                 setpointsShoulder.velocity,
                 setpointsElbow.velocity,
-                true,
-                isElbowRelativeToShoulder);
+                true);
 
         arm.setVoltageShoulder(feedforwardResults.shoulder);
         arm.setVoltageElbow(feedforwardResults.elbow);
+    }
+
+    private TrapezoidProfile.State getShoulderSetpoints() {
+        if (!isShoulderMoving)
+            return new TrapezoidProfile.State(arm.getShoulderAngle(), 0);
+        return trapezoidProfileShoulder.calculate(shoulderTimer.get());
+    }
+
+    private TrapezoidProfile.State getElbowSetpoints() {
+        if (arm.getLockedState() == Arm.LockedStates.LOCKED)
+            return new TrapezoidProfile.State(ArmConstants.ANGLE_REST_ELBOW, 0);
+        if (!isElbowMoving)
+            return new TrapezoidProfile.State(arm.getElbowAngle(), 0);
+        return trapezoidProfileElbow.calculate(elbowTimer.get());
     }
 
     @Override
@@ -100,9 +135,7 @@ public class MoveArmToPosition extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        boolean shoulderTrapezoidFinished = trapezoidProfileShoulder == null || trapezoidProfileShoulder.isFinished(timer.get());
-        boolean elbowTrapezoidFinished = trapezoidProfileElbow == null || trapezoidProfileElbow.isFinished(timer.get());
-        return  (!shouldMoveShoulder || (shoulderTrapezoidFinished && arm.shoulderPIDAtSetpoint()))
-                && (!shouldMoveElbow || (elbowTrapezoidFinished && arm.elbowPIDAtSetpoint()));
+        return trapezoidProfileShoulder.isFinished(shoulderTimer.get()) && arm.shoulderPIDAtSetpoint()
+                && trapezoidProfileElbow.isFinished(elbowTimer.get()) && arm.elbowPIDAtSetpoint();
     }
 }

@@ -9,7 +9,10 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.commands.ArcadeDrive;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.commands.IntakeController;
+
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -30,7 +33,9 @@ public class RobotContainer {
         private final SendableChooser<CommandSupplier> secondAutoCommandChooser = new SendableChooser<>();
 
         public RobotContainer() {
-                CameraServer.startAutomaticCapture();
+                UsbCamera camera = CameraServer.startAutomaticCapture();
+                camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 15);
+
                 configureBindings();
                 firstAutoCommandChooser.setDefaultOption(
                                 "Release Cone",
@@ -90,7 +95,7 @@ public class RobotContainer {
                                 drivetrain,
                                 () -> -driverController.getLeftY(),
                                 driverController::getRightX,
-                                () -> driverController.leftBumper().getAsBoolean(),
+                                () -> driverController.rightBumper().getAsBoolean(),
                                 () -> driverController.rightBumper().getAsBoolean()));
 
                 // operator
@@ -112,17 +117,15 @@ public class RobotContainer {
                 operatorController.povLeft().onTrue(ArmPositionsCommands.coneSecond(arm));
                 operatorController.povUp().onTrue(ArmPositionsCommands.coneThird(arm));
                 operatorController.povDown().onTrue(ArmPositionsCommands.floor(arm));
-                operatorController.povRight().onTrue(ArmPositionsCommands.restElbow(arm));
-                operatorController.start().onTrue(ArmPositionsCommands.floorTouchAndGo(arm));
+                operatorController.povRight().onTrue(ArmPositionsCommands.floorTouchAndGo(arm));
  
                 operatorController.leftBumper().onTrue(new InstantCommand(
                                 () -> arm.setEmergencyMode(!arm.getEmergencyMode())));
                 operatorController.rightBumper().whileTrue(
                                 new RunCommand(() -> {
-                                        arm.setSpeedShoulder(0);
-                                        arm.setSpeedElbow(0);
+                                        arm.setVoltageElbow(0);
+                                        arm.setVoltageElbow(0);
                                 }, arm));
-
                 
                 // operatorController.rightStick().onTrue(new InstantCommand(() -> arm.resetEncoders()));
         }

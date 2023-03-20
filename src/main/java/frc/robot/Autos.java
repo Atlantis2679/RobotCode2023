@@ -1,7 +1,5 @@
 package frc.robot;
 
-import java.lang.constant.DirectMethodHandleDesc;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -18,15 +16,6 @@ import frc.robot.subsystems.drivetrain.commands.TurnByDegree;
 import frc.robot.subsystems.intake.Intake;
 
 public final class Autos {
-  public static Command freeArm(Arm arm) {
-    return ArmPositionsCommands.restElbow(arm)
-        .andThen(new ArmController(
-            arm,
-            () -> Constants.Autos.FreeArm.SHOULDER_RAISE_SPEED,
-            () -> 0,
-            false).until(() -> arm.getShoulderAngle() > Constants.Autos.FreeArm.SHOULDER_FREE_ANGLE));
-  }
-
   public static Command releaseCone(Intake intake) {
     return new InstantCommand(() -> intake.setSpeed(-Constants.Autos.ReleaseCone.RELEASE_SPEED), intake)
         .andThen(new WaitCommand(Constants.Autos.ReleaseCone.RELEASE_TIME_SECONDS))
@@ -35,7 +24,6 @@ public final class Autos {
 
   public static Command releaseConeSecond(Arm arm, Intake intake, Drivetrain drivetrain) {
     return driveForDistance(drivetrain, 0.20, 0.3, true)
-        .andThen(freeArm(arm))
         .andThen(
             ArmPositionsCommands.coneSecond(arm).withTimeout(Constants.Autos.releaseConeSecond.TIMEOUT_SECONDS_RAISE))
         .andThen(releaseCone(intake))
@@ -44,7 +32,6 @@ public final class Autos {
 
   public static Command releaseConeThird(Arm arm, Intake intake, Drivetrain drivetrain) {
     return new DriveToDistance(drivetrain, Constants.Autos.releaseConeThird.DRIVE_TO_DISTANCE_START)
-        .alongWith(freeArm(arm))
         .andThen(
             ArmPositionsCommands.coneThird(arm).withTimeout(Constants.Autos.releaseConeThird.TIMEOUT_SECONDS_RAISE))
         .andThen(new DriveToDistance(drivetrain, Constants.Autos.releaseConeThird.DRIVE_TO_DISTANCE_BEFORE_RELEASE))
@@ -62,7 +49,6 @@ public final class Autos {
 
   public static Command releaseCubeSecond(Arm arm, Intake intake, Drivetrain drivetrain) {
     return new DriveToDistance(drivetrain, Constants.Autos.releaseCubeSecond.DRIVE_TO_DISTANCE)
-        .alongWith(freeArm(arm))
         .andThen(
             ArmPositionsCommands.cubeSecond(arm).withTimeout(Constants.Autos.releaseCubeSecond.TIMEOUT_SECONDS_RAISE))
         .andThen(releaseCube(intake))
@@ -70,9 +56,7 @@ public final class Autos {
   }
 
   public static Command releaseCubeThird(Arm arm, Intake intake) {
-    return freeArm(arm)
-        .andThen(
-            ArmPositionsCommands.cubeThird(arm).withTimeout(Constants.Autos.releaseCubeThird.TIMEOUT_SECONDS_RAISE))
+    return ArmPositionsCommands.cubeThird(arm).withTimeout(Constants.Autos.releaseCubeThird.TIMEOUT_SECONDS_RAISE)
         .andThen(releaseCube(intake))
         .andThen(ArmPositionsCommands.rest(arm).withTimeout(Constants.Autos.releaseCubeThird.TIMEOUT_SECONDS_LOWER));
   }
@@ -89,34 +73,25 @@ public final class Autos {
 
   public static Command balanceChargeStation(Drivetrain drivetrain, Arm arm) {
     return new InstantCommand(() -> {
-      arm.setSpeedShoulder(0);
-      arm.setSpeedElbow(0);
+      arm.setVoltageShoulder(0);
+      arm.setVoltageElbow(0);
     }, arm).andThen(
         new GetOnChargeStation(drivetrain).withTimeout(Constants.Autos.GetOnChargeStationAuto.TIMEOUT_SECONDS))
         .andThen(driveForDistance(
-            drivetrain,
-            Constants.Autos.BalanceOnChargeStationAuto.DISTANCE_TO_CLOSER_CENTER,
-            Constants.Autos.BalanceOnChargeStationAuto.SPEED_TO_CLOSER_CENTER,
-            Constants.Autos.BalanceOnChargeStationAuto.IS_REVERSED)
-            .withTimeout(Constants.Autos.BalanceOnChargeStationAuto.GET_CLOSER_TO_CENTER_TIMEOUT))
+          drivetrain,
+          Constants.Autos.BalanceOnChargeStationAuto.DISTANCE_TO_CLOSER_CENTER,
+          Constants.Autos.BalanceOnChargeStationAuto.SPEED_TO_CLOSER_CENTER,
+          Constants.Autos.BalanceOnChargeStationAuto.IS_REVERSED)
+          .withTimeout(Constants.Autos.BalanceOnChargeStationAuto.GET_CLOSER_TO_CENTER_TIMEOUT))
+          
+          // .andThen(() -> drivetrain.setSpeed(-0.2, -0.2), drivetrain)
+          // .andThen(new WaitCommand(0.2))
+          // .andThen(new WaitUntilCommand(() -> drivetrain.getPitch() > -5))
+          // .andThen(() -> drivetrain.setSpeed(0, 0))
+          // .andThen(new WaitCommand(0.2))
+          // .andThen(new WaitCommand(0.5)).until(() -> Math.abs(drivetrain.getPitch()) > 10)
+
         .andThen(new BalanceOnChargeStation(drivetrain));
-    // return new InstantCommand(() -> {
-    //   arm.setSpeedShoulder(0);
-    //   arm.setSpeedElbow(0);
-    // }, arm).andThen(
-    //     new GetOnChargeStation(drivetrain).withTimeout(Constants.Autos.GetOnChargeStationAuto.TIMEOUT_SECONDS))
-    //     .andThen(driveForDistance(
-    //         drivetrain,
-    //         Constants.Autos.BalanceOnChargeStationAuto.DISTANCE_TO_CLOSER_CENTER,
-    //         Constants.Autos.BalanceOnChargeStationAuto.SPEED_TO_CLOSER_CENTER,
-    //         Constants.Autos.BalanceOnChargeStationAuto.IS_REVERSED)
-    //         .withTimeout(Constants.Autos.BalanceOnChargeStationAuto.GET_CLOSER_TO_CENTER_TIMEOUT))
-    //     .andThen(() -> drivetrain.setSpeed(-0.2, -0.2), drivetrain)
-    //     .andThen(new WaitUntilCommand(() -> drivetrain.getPitch() > -10))
-    //     .andThen(() -> drivetrain.setSpeed(0, 0))
-    //     .andThen(new WaitCommand(0.1))
-    //     .andThen(new WaitCommand(0.5)).until(() -> Math.abs(drivetrain.getPitch()) < 7)
-    //     .andThen(new BalanceOnChargeStation(drivetrain));
   }
 
   public static Command driveForDistance(Drivetrain drivetrain, double metersDistance, double speed,
