@@ -48,10 +48,9 @@ public class ArmController extends CommandBase {
 
     ArmValues<Double> feedforwardResults = arm.calculateFeedforward(
       arm.getShoulderAngle(),
-      arm.getElbowAngle(false),
+      arm.getElbowAngle(),
       0,
       0,
-      false,
       false
     );
 

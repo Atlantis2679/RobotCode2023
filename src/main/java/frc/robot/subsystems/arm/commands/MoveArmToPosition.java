@@ -16,8 +16,6 @@ public class MoveArmToPosition extends CommandBase {
     private double targetPositionShoulder;
     private double targetPositionElbow;
 
-    private boolean isElbowRelativeToShoulder = false;
-
     private boolean isElbowMoving = false;
     private boolean isShoulderMoving = false;
 
@@ -42,12 +40,10 @@ public class MoveArmToPosition extends CommandBase {
         }
     }
 
-    public MoveArmToPosition(Arm arm, double targetPositionShoulder, double targetPositionElbow,
-            boolean isElbowRelativeToShoulder) {
+    public MoveArmToPosition(Arm arm, double targetPositionShoulder, double targetPositionElbow) {
         this.arm = arm;
         addRequirements(arm);
 
-        this.isElbowRelativeToShoulder = isElbowRelativeToShoulder;
         this.targetPositionShoulder = targetPositionShoulder;
         this.targetPositionElbow = targetPositionElbow;
     }
@@ -83,14 +79,14 @@ public class MoveArmToPosition extends CommandBase {
                         ArmConstants.Feedforward.Elbow.MAX_VELOCITY,
                         ArmConstants.Feedforward.Elbow.MAX_ACCELERATION),
                 new TrapezoidProfile.State(targetPositionElbow, 0),
-                new TrapezoidProfile.State(arm.getElbowAngle(isElbowRelativeToShoulder), 0));
+                new TrapezoidProfile.State(arm.getElbowAngle(), 0));
     }
 
     @Override
     public void execute() {
         if (passLockDirection == PassLockDirection.LOCKING
                 && !isShoulderMoving
-                && (trapezoidProfileElbow.totalTime() - elbowTimer.get()) <= trapezoidProfileShoulder
+                && ((trapezoidProfileElbow.totalTime() + 0.3) - elbowTimer.get()) <= trapezoidProfileShoulder
                         .timeLeftUntil(ArmConstants.LOCKED_MAX_SHOULDER_ANGLE)) {
 
             shoulderTimer.restart();
@@ -113,8 +109,7 @@ public class MoveArmToPosition extends CommandBase {
                 setpointsElbow.position,
                 setpointsShoulder.velocity,
                 setpointsElbow.velocity,
-                true,
-                isElbowRelativeToShoulder);
+                true);
 
         arm.setVoltageShoulder(feedforwardResults.shoulder);
         arm.setVoltageElbow(feedforwardResults.elbow);
@@ -130,7 +125,7 @@ public class MoveArmToPosition extends CommandBase {
         if (arm.getLockedState() == Arm.LockedStates.LOCKED)
             return new TrapezoidProfile.State(ArmConstants.ANGLE_REST_ELBOW, 0);
         if (!isElbowMoving)
-            return new TrapezoidProfile.State(arm.getElbowAngle(isElbowRelativeToShoulder), 0);
+            return new TrapezoidProfile.State(arm.getElbowAngle(), 0);
         return trapezoidProfileElbow.calculate(elbowTimer.get());
     }
 

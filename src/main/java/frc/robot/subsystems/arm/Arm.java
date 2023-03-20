@@ -29,7 +29,6 @@ public class Arm extends SubsystemBase {
 
     private double shoulderAngle;
     private double elbowAngle;
-    private double elbowAngleRelativeToShoulder;
 
     public enum LockedStates {
         UNLOCKED,
@@ -104,18 +103,15 @@ public class Arm extends SubsystemBase {
                 encoderShoulderZeroAngle,
                 ENCODER_MAX_POSITIVE_SHOULDER);
 
-        elbowAngleRelativeToShoulder = normalizeAbsoluteAngle(
+        elbowAngle = normalizeAbsoluteAngle(
                 encoderElbow.getAbsolutePosition(),
                 encoderElbowZeroAngle,
                 ENCODER_MAX_POSITIVE_ELBOW);
 
-        elbowAngle = elbowAngleRelativeToShoulder + shoulderAngle;
-
-        lockedState = LockedStates.getFromAngles(shoulderAngle, elbowAngleRelativeToShoulder);
+        lockedState = LockedStates.getFromAngles(shoulderAngle, elbowAngle);
 
         SmartDashboard.putNumber("arm angle shoulder", getShoulderAngle());
-        SmartDashboard.putNumber("arm angle elbow", getElbowAngle(false));
-        SmartDashboard.putNumber("arm angle elbow relative to shoulder", getElbowAngle(true));
+        SmartDashboard.putNumber("arm angle elbow", getElbowAngle());
         SmartDashboard.putNumber("arm shoulder zero angle", encoderShoulderZeroAngle);
         SmartDashboard.putNumber("arm elbow zero angle", encoderElbowZeroAngle);
         SmartDashboard.putBoolean("arm is emeregency mode", isEmergencyMode);
@@ -162,8 +158,8 @@ public class Arm extends SubsystemBase {
         return shoulderAngle;
     }
 
-    public double getElbowAngle(boolean isRelativeToShoulder) {
-        return isRelativeToShoulder ? elbowAngleRelativeToShoulder : elbowAngle;
+    public double getElbowAngle() {
+        return elbowAngle;
     }
 
     public LockedStates getLockedState() {
@@ -175,20 +171,19 @@ public class Arm extends SubsystemBase {
             double elbowAngle,
             double shoulderVelocity,
             double elbowVelocity,
-            boolean usePID,
-            boolean isRelativeToShoulder) {
+            boolean usePID) {
 
         if (isEmergencyMode)
             return new ArmValues<Double>(0.0, 0.0);
 
         ArmValues<Double> voltages = new ArmValues<>(
                 feedForwardShoulder.calculate(Math.toRadians(shoulderAngle), shoulderVelocity),
-                feedforwardElbow.calculate(Math.toRadians(elbowAngle + (isRelativeToShoulder ? getShoulderAngle() : 0)),
+                feedforwardElbow.calculate(Math.toRadians(elbowAngle + shoulderAngle),
                         elbowVelocity));
 
         if (usePID) {
-            voltages.shoulder += pidControllerShoulder.calculate(getShoulderAngle(), shoulderAngle);
-            voltages.elbow += pidControllerElbow.calculate(getElbowAngle(isRelativeToShoulder), elbowAngle);
+            voltages.shoulder += pidControllerShoulder.calculate(this.shoulderAngle, shoulderAngle);
+            voltages.elbow += pidControllerElbow.calculate(this.elbowAngle, elbowAngle);
         }
 
         return voltages;

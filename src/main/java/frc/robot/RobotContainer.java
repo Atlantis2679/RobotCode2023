@@ -10,8 +10,6 @@ import frc.robot.subsystems.drivetrain.commands.ArcadeDrive;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.commands.IntakeController;
 
-import org.opencv.video.Video;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoMode;
@@ -36,7 +34,7 @@ public class RobotContainer {
 
         public RobotContainer() {
                 UsbCamera camera = CameraServer.startAutomaticCapture();
-                camera.setVideoMode(VideoMode.PixelFormat.kYUYV, 640, 360, 30);
+                camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 15);
 
                 configureBindings();
                 firstAutoCommandChooser.setDefaultOption(

@@ -78,29 +78,20 @@ public final class Autos {
     }, arm).andThen(
         new GetOnChargeStation(drivetrain).withTimeout(Constants.Autos.GetOnChargeStationAuto.TIMEOUT_SECONDS))
         .andThen(driveForDistance(
-            drivetrain,
-            Constants.Autos.BalanceOnChargeStationAuto.DISTANCE_TO_CLOSER_CENTER,
-            Constants.Autos.BalanceOnChargeStationAuto.SPEED_TO_CLOSER_CENTER,
-            Constants.Autos.BalanceOnChargeStationAuto.IS_REVERSED)
-            .withTimeout(Constants.Autos.BalanceOnChargeStationAuto.GET_CLOSER_TO_CENTER_TIMEOUT))
+          drivetrain,
+          Constants.Autos.BalanceOnChargeStationAuto.DISTANCE_TO_CLOSER_CENTER,
+          Constants.Autos.BalanceOnChargeStationAuto.SPEED_TO_CLOSER_CENTER,
+          Constants.Autos.BalanceOnChargeStationAuto.IS_REVERSED)
+          .withTimeout(Constants.Autos.BalanceOnChargeStationAuto.GET_CLOSER_TO_CENTER_TIMEOUT))
+          
+          // .andThen(() -> drivetrain.setSpeed(-0.2, -0.2), drivetrain)
+          // .andThen(new WaitCommand(0.2))
+          // .andThen(new WaitUntilCommand(() -> drivetrain.getPitch() > -5))
+          // .andThen(() -> drivetrain.setSpeed(0, 0))
+          // .andThen(new WaitCommand(0.2))
+          // .andThen(new WaitCommand(0.5)).until(() -> Math.abs(drivetrain.getPitch()) > 10)
+
         .andThen(new BalanceOnChargeStation(drivetrain));
-    // return new InstantCommand(() -> {
-    //   arm.setSpeedShoulder(0);
-    //   arm.setSpeedElbow(0);
-    // }, arm).andThen(
-    //     new GetOnChargeStation(drivetrain).withTimeout(Constants.Autos.GetOnChargeStationAuto.TIMEOUT_SECONDS))
-    //     .andThen(driveForDistance(
-    //         drivetrain,
-    //         Constants.Autos.BalanceOnChargeStationAuto.DISTANCE_TO_CLOSER_CENTER,
-    //         Constants.Autos.BalanceOnChargeStationAuto.SPEED_TO_CLOSER_CENTER,
-    //         Constants.Autos.BalanceOnChargeStationAuto.IS_REVERSED)
-    //         .withTimeout(Constants.Autos.BalanceOnChargeStationAuto.GET_CLOSER_TO_CENTER_TIMEOUT))
-    //     .andThen(() -> drivetrain.setSpeed(-0.2, -0.2), drivetrain)
-    //     .andThen(new WaitUntilCommand(() -> drivetrain.getPitch() > -10))
-    //     .andThen(() -> drivetrain.setSpeed(0, 0))
-    //     .andThen(new WaitCommand(0.1))
-    //     .andThen(new WaitCommand(0.5)).until(() -> Math.abs(drivetrain.getPitch()) < 7)
-    //     .andThen(new BalanceOnChargeStation(drivetrain));
   }
 
   public static Command driveForDistance(Drivetrain drivetrain, double metersDistance, double speed,
