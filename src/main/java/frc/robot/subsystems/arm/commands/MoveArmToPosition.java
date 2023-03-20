@@ -86,7 +86,7 @@ public class MoveArmToPosition extends CommandBase {
     public void execute() {
         if (passLockDirection == PassLockDirection.LOCKING
                 && !isShoulderMoving
-                && ((trapezoidProfileElbow.totalTime() + 0.3) - elbowTimer.get()) <= trapezoidProfileShoulder
+                && (trapezoidProfileElbow.totalTime() - elbowTimer.get()) <= trapezoidProfileShoulder
                         .timeLeftUntil(ArmConstants.LOCKED_MAX_SHOULDER_ANGLE)) {
 
             shoulderTimer.restart();
