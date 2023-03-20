@@ -95,7 +95,7 @@ public class RobotContainer {
                                 drivetrain,
                                 () -> -driverController.getLeftY(),
                                 driverController::getRightX,
-                                () -> driverController.leftBumper().getAsBoolean(),
+                                () -> driverController.rightBumper().getAsBoolean(),
                                 () -> driverController.rightBumper().getAsBoolean()));
 
                 // operator
