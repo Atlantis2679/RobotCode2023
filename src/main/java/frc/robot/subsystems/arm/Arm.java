@@ -115,6 +115,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("arm shoulder zero angle", encoderShoulderZeroAngle);
         SmartDashboard.putNumber("arm elbow zero angle", encoderElbowZeroAngle);
         SmartDashboard.putBoolean("arm is emeregency mode", isEmergencyMode);
+        SmartDashboard.putBoolean("arm is badly closed out of lock", lockedState == LockedStates.BADLY_CLOSED_OUT_OF_LOCK);
         SmartDashboard.putBoolean("arm is shoulder pid at setpoint", shoulderPIDAtSetpoint());
         SmartDashboard.putBoolean("arm is elbow pid at setpoint", elbowPIDAtSetpoint());
     }
