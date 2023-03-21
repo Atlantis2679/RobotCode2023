@@ -7,8 +7,13 @@ public final class Constants {
     public static final double JOYSTICKS_DEADBAND_VALUE = 0.05;
   }
 
-  public static final class Autos {
+  public static final class Camera {
+    public static final int WIDTH = 352;
+    public static final int HEIGHT = 288;
+    public static final int FPS = 15;
+  }
 
+  public static final class Autos {
     public static final class FreeArm {
       public static final double SHOULDER_RAISE_SPEED = 0.4;
       public static final double TIMEOUT_SECONDS = 0.3;
