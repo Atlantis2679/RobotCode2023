@@ -34,31 +34,35 @@ public class RobotContainer {
 
         public RobotContainer() {
                 UsbCamera camera = CameraServer.startAutomaticCapture();
-                camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 640, 360, 15);
+                camera.setVideoMode(
+                                VideoMode.PixelFormat.kMJPEG,
+                                Constants.Camera.WIDTH,
+                                Constants.Camera.HEIGHT,
+                                Constants.Camera.FPS);
 
                 configureBindings();
                 firstAutoCommandChooser.setDefaultOption(
                                 "Release Cone",
                                 () -> Autos.releaseCone(intake));
-                
-                // firstAutoCommandChooser.setDefaultOption(
-                //                 "Release Cone Second",
-                //                 () -> Autos.releaseConeSecond(arm, intake, drivetrain));
 
                 // firstAutoCommandChooser.setDefaultOption(
-                //                 "Release Cone Third",
-                //                 () -> Autos.releaseConeThird(arm, intake, drivetrain));
+                // "Release Cone Second",
+                // () -> Autos.releaseConeSecond(arm, intake, drivetrain));
+
+                // firstAutoCommandChooser.setDefaultOption(
+                // "Release Cone Third",
+                // () -> Autos.releaseConeThird(arm, intake, drivetrain));
 
                 firstAutoCommandChooser.addOption(
                                 "Release Cube",
                                 () -> Autos.releaseCube(intake));
-                
+
                 firstAutoCommandChooser.addOption(
-                                "Release Cube Second", 
+                                "Release Cube Second",
                                 () -> Autos.releaseCubeSecond(arm, intake, drivetrain));
-                
+
                 firstAutoCommandChooser.addOption(
-                                "Release Cube Third", 
+                                "Release Cube Third",
                                 () -> Autos.releaseCubeThird(arm, intake));
 
                 firstAutoCommandChooser.addOption(
@@ -118,7 +122,7 @@ public class RobotContainer {
                 operatorController.povUp().onTrue(ArmPositionsCommands.coneThird(arm));
                 operatorController.povDown().onTrue(ArmPositionsCommands.floor(arm));
                 operatorController.povRight().onTrue(ArmPositionsCommands.floorTouchAndGo(arm));
- 
+
                 operatorController.leftBumper().onTrue(new InstantCommand(
                                 () -> arm.setEmergencyMode(!arm.getEmergencyMode())));
                 operatorController.rightBumper().whileTrue(
@@ -126,8 +130,9 @@ public class RobotContainer {
                                         arm.setVoltageElbow(0);
                                         arm.setVoltageElbow(0);
                                 }, arm));
-                
-                // operatorController.rightStick().onTrue(new InstantCommand(() -> arm.resetEncoders()));
+
+                // operatorController.rightStick().onTrue(new InstantCommand(() ->
+                // arm.resetEncoders()));
         }
 
         public Command getAutonomousCommand() {
