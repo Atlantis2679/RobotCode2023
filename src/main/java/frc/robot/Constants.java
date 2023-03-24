@@ -72,15 +72,15 @@ public final class Constants {
 
     public static final class BalanceOnChargeStationAuto {
       public static final boolean IS_REVERSED = true;
-      public static final double SPEED_TO_CLOSER_CENTER = 0.6;
-      public static final double DISTANCE_TO_CLOSER_CENTER = 0.4;
+      public static final double SPEED_TO_CLOSER_CENTER = 0.5;
+      public static final double DISTANCE_TO_CLOSER_CENTER = 0.3;
       public static final double GET_CLOSER_TO_CENTER_TIMEOUT = 2;
       
       public static final double MAX_SPEED = 0.27;
 
-      public static final double KP = 0.021;
+      public static final double KP = 0.019;
       public static final double KI = 0;
-      public static final double KD = 0.003;
+      public static final double KD = 0.0025;
 
       public static final double POSITION_TOLERANCE = 1.5;
       public static final double VELOCITY_TOLERANCE = 0.2;

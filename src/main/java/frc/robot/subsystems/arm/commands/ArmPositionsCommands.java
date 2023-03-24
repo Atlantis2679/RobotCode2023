@@ -19,6 +19,17 @@ public class ArmPositionsCommands {
                 ArmConstants.ANGLE_THIRD_CUBE_ELBOW);
     }
 
+    public static Command cubeThirdMoveIndividualyFromRest(Arm arm) {
+        return new MoveArmToPosition(
+                arm,
+                ArmConstants.ANGLE_THIRD_CUBE_SHOULDER,
+                ArmConstants.ANGLE_REST_ELBOW)
+                .andThen(new MoveArmToPosition(
+                        arm,
+                        ArmConstants.ANGLE_THIRD_CUBE_SHOULDER,
+                        ArmConstants.ANGLE_THIRD_CUBE_ELBOW));
+    }
+
     public static Command cubeSecond(Arm arm) {
         return new MoveArmToPosition(
                 arm,

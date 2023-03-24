@@ -56,7 +56,7 @@ public final class Autos {
   }
 
   public static Command releaseCubeThird(Arm arm, Intake intake) {
-    return ArmPositionsCommands.cubeThird(arm).withTimeout(Constants.Autos.releaseCubeThird.TIMEOUT_SECONDS_RAISE)
+    return ArmPositionsCommands.cubeThirdMoveIndividualyFromRest(arm).withTimeout(Constants.Autos.releaseCubeThird.TIMEOUT_SECONDS_RAISE)
         .andThen(releaseCube(intake))
         .andThen(ArmPositionsCommands.rest(arm).withTimeout(Constants.Autos.releaseCubeThird.TIMEOUT_SECONDS_LOWER));
   }
@@ -77,6 +77,8 @@ public final class Autos {
       arm.setVoltageElbow(0);
     }, arm).andThen(
         new GetOnChargeStation(drivetrain).withTimeout(Constants.Autos.GetOnChargeStationAuto.TIMEOUT_SECONDS))
+        .andThen(() -> drivetrain.setSpeed(-Constants.Autos.BalanceOnChargeStationAuto.SPEED_TO_CLOSER_CENTER, -Constants.Autos.BalanceOnChargeStationAuto.SPEED_TO_CLOSER_CENTER), drivetrain)
+        .andThen(new WaitUntilCommand(() -> drivetrain.getPitch() > -18).withTimeout(0.15))
         .andThen(driveForDistance(
           drivetrain,
           Constants.Autos.BalanceOnChargeStationAuto.DISTANCE_TO_CLOSER_CENTER,
