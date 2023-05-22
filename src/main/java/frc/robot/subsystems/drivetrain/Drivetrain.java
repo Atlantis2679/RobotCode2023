@@ -1,39 +1,57 @@
 package frc.robot.subsystems.drivetrain;
 
+import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-
 public class Drivetrain extends SubsystemBase {
-    private static Drivetrain instance = null;
-    private final TalonSRX leftMotor = new TalonSRX(DrivetrainConstants.LEFT_ID);
-    private final TalonSRX leftMotorFollower = new TalonSRX(DrivetrainConstants.LEFT_FOLLOWER_ID);
-    private final TalonSRX rightMotor = new TalonSRX(DrivetrainConstants.RIGHT_ID);
-    private final TalonSRX rightMotorFollower = new TalonSRX(DrivetrainConstants.RIGHT_FOLLOWER_ID);
+    private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(LEFT_ID);
+    private final WPI_TalonSRX leftMotorFollower = new WPI_TalonSRX(LEFT_FOLLOWER_ID);
+    private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(RIGHT_ID);
+    private final WPI_TalonSRX rightMotorFollower = new WPI_TalonSRX(RIGHT_FOLLOWER_ID);
 
-    private final PigeonIMU imu = new PigeonIMU(rightMotorFollower);
-    private final Encoder leftEncoder = new Encoder(DrivetrainConstants.LEFT_ENCODER_CHANNEL_A,
-            DrivetrainConstants.LEFT_ENCODER_CHANNEL_B);
-    private final Encoder rightEncoder = new Encoder(DrivetrainConstants.RIGHT_ENCODER_CHANNEL_A,
-            DrivetrainConstants.RIGHT_ENCODER_CHANNEL_B);
+    private final WPI_PigeonIMU imu = new WPI_PigeonIMU(rightMotorFollower);
+    private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_CHANNEL_A,
+            LEFT_ENCODER_CHANNEL_B);
+    private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_CHANNEL_A,
+            RIGHT_ENCODER_CHANNEL_B);
 
-    private double pitchOffset = DrivetrainConstants.PITCH_OFFSET;
+    private double pitchOffset = PITCH_OFFSET;
 
-    private Drivetrain() {
+    private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(
+        Rotation2d.fromDegrees(0),
+        0,
+        0,
+        new Pose2d(new Translation2d(8, 3 ), Rotation2d.fromDegrees(0))
+    );
+    
+
+    private final Field2d field = new Field2d();
+    
+
+
+
+    public Drivetrain() {
         SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(
                 true,
                 DrivetrainConstants.CURRENT_LIMIT_AMP,
                 0,
-                0
-        );
+                0);
+
         rightMotor.configSupplyCurrentLimit(currentLimitConfiguration);
         rightMotorFollower.configSupplyCurrentLimit(currentLimitConfiguration);
         leftMotor.configSupplyCurrentLimit(currentLimitConfiguration);
@@ -58,17 +76,26 @@ public class Drivetrain extends SubsystemBase {
         double distancePerRound = wheelRadiusInMeters * 2 * Math.PI;
         double roundsPerPules = 1.0 / pulsesInRound;
 
-        double distancePerPules = distancePerRound * roundsPerPules;    
+        double distancePerPules = distancePerRound * roundsPerPules;
 
         rightEncoder.setDistancePerPulse(distancePerPules);
         leftEncoder.setDistancePerPulse(distancePerPules);
+
+        imu.reset();
     }
 
-    public void setSpeed(double leftDemand, double rightDemand){
+    public void setSpeed(double leftDemand, double rightDemand) {
         leftDemand = MathUtil.clamp(leftDemand, -1, 1);
         rightDemand = MathUtil.clamp(rightDemand, -1, 1);
         leftMotor.set(ControlMode.PercentOutput, leftDemand);
         rightMotor.set(ControlMode.PercentOutput, rightDemand);
+    }
+
+    public void setVoltage(double leftDemand, double rightDemand) {
+        leftDemand = MathUtil.clamp(leftDemand, -1, 1);
+        rightDemand = MathUtil.clamp(rightDemand, -1, 1);
+        leftMotor.setVoltage(leftDemand);
+        rightMotor.setVoltage(rightDemand);
     }
 
     public double getPitch() {
@@ -101,17 +128,13 @@ public class Drivetrain extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {
+    public void periodic() {   
+        field.setRobotPose(odometry.getPoseMeters());
+        odometry.update(imu.getRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters());
+
         SmartDashboard.putNumber("IMU pitch", getPitch());
         SmartDashboard.putNumber("left encoder drivetrain", getLeftDistanceMeters());
         SmartDashboard.putNumber("right encoder drivetrain", getRightDistanceMeters());
-    }
-
-    public static Drivetrain getInstance() {
-        if (instance == null) {
-            instance = new Drivetrain();
-        }
-
-        return instance;
+        SmartDashboard.putData("odometry", field);
     }
 }

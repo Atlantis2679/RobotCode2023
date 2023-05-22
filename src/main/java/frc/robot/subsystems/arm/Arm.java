@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Arm extends SubsystemBase {
-    private static Arm instance = null;
     private final CANSparkMax motorShoulder = new CANSparkMax(ArmConstants.MOTOR_SHOULDER_ID, MotorType.kBrushless);
     private final CANSparkMax motorShoulderFollower = new CANSparkMax(ArmConstants.MOTOR_SHOULDER_FOLLOWER_ID,
             MotorType.kBrushless);
@@ -72,7 +71,7 @@ public class Arm extends SubsystemBase {
 
     private boolean isEmergencyMode = false;
 
-    private Arm() {
+    public Arm() {
         motorShoulder.setSmartCurrentLimit(ArmConstants.CURRENT_LIMIT_SHOULDER_AMP);
         motorShoulder.setInverted(true);
         motorShoulderFollower.setSmartCurrentLimit(ArmConstants.CURRENT_LIMIT_SHOULDER_AMP);
@@ -208,12 +207,5 @@ public class Arm extends SubsystemBase {
 
     public boolean getEmergencyMode() {
         return isEmergencyMode;
-    }
-
-    public static Arm getInstance() {
-        if (instance == null) {
-            instance = new Arm();
-        }
-        return instance;
     }
 }

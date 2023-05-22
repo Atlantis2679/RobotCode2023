@@ -1,0 +1,26 @@
+{
+  "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/First Auto Command": "String Chooser",
+      "/SmartDashboard/Second Auto Command": "String Chooser",
+      "/SmartDashboard/odometry": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/odometry": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "2679"
+  }
+}

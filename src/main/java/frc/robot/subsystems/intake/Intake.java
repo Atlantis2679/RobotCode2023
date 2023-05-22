@@ -8,12 +8,11 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    private static Intake instance = null;
     private final TalonSRX motor = new TalonSRX(IntakeConstants.MOTOR_ID);
 
-    private Intake() {
+    public Intake() {
         SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(
-                true,
+            true,
                 IntakeConstants.CURRENT_LIMIT_AMP,
                 0,
                 0
@@ -28,11 +27,4 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() { }
-
-    public static Intake getInstance() {
-        if(instance == null) {
-            instance = new Intake();
-        }
-        return instance;
-    }
 }

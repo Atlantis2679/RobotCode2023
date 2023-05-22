@@ -7,6 +7,7 @@ import frc.robot.subsystems.arm.commands.ArmController;
 import frc.robot.subsystems.arm.commands.ArmPositionsCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.commands.ArcadeDrive;
+import frc.robot.subsystems.drivetrain.commands.TrapazoidFeedforwardDriveToDistance;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.commands.IntakeController;
 
@@ -19,9 +20,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {
-        private final Drivetrain drivetrain = Drivetrain.getInstance();
-        private final Intake intake = Intake.getInstance();
-        private final Arm arm = Arm.getInstance();
+        private final Drivetrain drivetrain = new Drivetrain();
+        private final Intake intake = new Intake();
+        private final Arm arm = new Arm();
         public final CommandXboxController driverController = new CommandXboxController(Constants.OI.DRIVER_PORT);
         public final CommandXboxController operatorController = new CommandXboxController(Constants.OI.OPERATOR_PORT);
 
@@ -102,6 +103,9 @@ public class RobotContainer {
                                 () -> driverController.rightBumper().getAsBoolean(),
                                 () -> driverController.rightBumper().getAsBoolean()));
 
+                driverController.a().onTrue(new TrapazoidFeedforwardDriveToDistance(drivetrain));
+                
+                
                 // operator
 
                 intake.setDefaultCommand(new IntakeController(

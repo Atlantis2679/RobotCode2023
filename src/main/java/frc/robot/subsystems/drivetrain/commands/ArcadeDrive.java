@@ -1,5 +1,7 @@
 package frc.robot.subsystems.drivetrain.commands;
 
+import static frc.robot.subsystems.drivetrain.DrivetrainConstants.ArcadeDrive.*;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -16,11 +18,6 @@ public class ArcadeDrive extends CommandBase {
     private final DoubleSupplier rotationDemandSupplier;
     private final BooleanSupplier IsSensitiveForwardSupplier;
     private final BooleanSupplier IsSensitiveRotationSupplier;
-
-    private final double FORWARD_MULTIPLIER = DrivetrainConstants.ArcadeDrive.FORWARD_MULTIPLIER;
-    private final double SENSITIVE_FORWARD_MULTIPLIER = DrivetrainConstants.ArcadeDrive.SENSITIVE_FORWARD_MULTIPLIER;
-    private final double ROTATION_MULTIPLIER = DrivetrainConstants.ArcadeDrive.ROTATION_MULTIPLIER;
-    private final double SENSITIVE_ROTATION_MULTIPLIER = DrivetrainConstants.ArcadeDrive.SENSITIVE_ROTATION_MULTIPLIER;
 
     public ArcadeDrive(
             Drivetrain drivetrain,
@@ -52,8 +49,8 @@ public class ArcadeDrive extends CommandBase {
         forwardDemand = MathUtil.clamp(forwardDemand, -1.0, 1.0);
         rotationDemand = MathUtil.clamp(rotationDemand, -1.0, 1.0);
 
-        forwardDemand *= IsSensitiveForwardSupplier.getAsBoolean() ? SENSITIVE_FORWARD_MULTIPLIER : FORWARD_MULTIPLIER;
-        rotationDemand *= IsSensitiveRotationSupplier.getAsBoolean() ? SENSITIVE_ROTATION_MULTIPLIER : ROTATION_MULTIPLIER;
+        forwardDemand *= !IsSensitiveForwardSupplier.getAsBoolean() ? SENSITIVE_FORWARD_MULTIPLIER : FORWARD_MULTIPLIER;
+        rotationDemand *= !IsSensitiveRotationSupplier.getAsBoolean() ? SENSITIVE_ROTATION_MULTIPLIER : ROTATION_MULTIPLIER;
 
         // Square the inputs (while preserving the sign) to increase fine control
         // while permitting full power.
