@@ -85,6 +85,10 @@ public class RobotContainer {
                 secondAutoCommandChooser.addOption(
                                 "Drive Backwards Outside Community",
                                 () -> Autos.driveBackwardsOutsideCommunity(drivetrain, false));
+                
+                secondAutoCommandChooser.addOption(
+                                "Drive trajectory", 
+                                () -> Autos.driveAutoPath(drivetrain));
 
                 secondAutoCommandChooser.addOption(
                                 "None",
@@ -103,7 +107,6 @@ public class RobotContainer {
                                 () -> driverController.rightBumper().getAsBoolean(),
                                 () -> driverController.rightBumper().getAsBoolean()));
 
-                driverController.a().onTrue(new TrapazoidFeedforwardDriveToDistance(drivetrain));
                 
                 
                 // operator
@@ -134,6 +137,8 @@ public class RobotContainer {
                                         arm.setVoltageElbow(0);
                                         arm.setVoltageElbow(0);
                                 }, arm));
+                
+                driverController.a().onTrue(Autos.driveAutoPath(drivetrain));
 
                 // operatorController.rightStick().onTrue(new InstantCommand(() ->
                 // arm.resetEncoders()));

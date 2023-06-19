@@ -1,6 +1,9 @@
 package frc.robot.subsystems.drivetrain;
 
 import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
+
+import java.util.function.BiConsumer;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -9,10 +12,15 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,9 +49,6 @@ public class Drivetrain extends SubsystemBase {
     
 
     private final Field2d field = new Field2d();
-    
-
-
 
     public Drivetrain() {
         SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(
@@ -92,8 +97,8 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void setVoltage(double leftDemand, double rightDemand) {
-        leftDemand = MathUtil.clamp(leftDemand, -1, 1);
-        rightDemand = MathUtil.clamp(rightDemand, -1, 1);
+        leftDemand = MathUtil.clamp(leftDemand, -12, 12);
+        rightDemand = MathUtil.clamp(rightDemand, -12, 12);
         leftMotor.setVoltage(leftDemand);
         rightMotor.setVoltage(rightDemand);
     }
@@ -127,6 +132,23 @@ public class Drivetrain extends SubsystemBase {
         return rightEncoder.getDistance();
     }
 
+    public void resetOdometry(Pose2d pose) {
+        odometry.resetPosition(imu.getRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters(), pose);
+    }
+
+    public Pose2d getPose() {
+        return odometry.getPoseMeters();
+    }
+
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(leftEncoder.getRate(), rightEncoder.getRate());
+    }
+
+    public void setTrajectory(Trajectory trajectory) { 
+        field.getObject("trajectory").setTrajectory(trajectory);
+    }
+
+
     @Override
     public void periodic() {   
         field.setRobotPose(odometry.getPoseMeters());
@@ -136,5 +158,6 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("left encoder drivetrain", getLeftDistanceMeters());
         SmartDashboard.putNumber("right encoder drivetrain", getRightDistanceMeters());
         SmartDashboard.putData("odometry", field);
+        SmartDashboard.putNumber("encoder velocity", leftEncoder.getRate());
     }
 }

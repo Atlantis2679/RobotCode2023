@@ -15,9 +15,10 @@ public class TrapazoidFeedforwardDriveToDistance extends CommandBase {
   private final Drivetrain drivetrain;
   private TrapezoidProfile trapezoidProfilePositions;
   private final Timer timer = new Timer();
-  private float lastVelocity = 0;
-  private float lastTime = 0;
-  private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0,0.2,0);
+  private double lastVelocity = 0;
+  private double lastTime = 0;
+  private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
+    0, 4.7,0);
 
   public TrapazoidFeedforwardDriveToDistance(Drivetrain drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -28,13 +29,15 @@ public class TrapazoidFeedforwardDriveToDistance extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    
+
     trapezoidProfilePositions = new TrapezoidProfile(
       new TrapezoidProfile.Constraints(
               1,
               1),
       new TrapezoidProfile.State(1, 0),
       new TrapezoidProfile.State(0, 0));
-      timer.start();
+      timer.restart();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,10 +45,13 @@ public class TrapazoidFeedforwardDriveToDistance extends CommandBase {
   public void execute() {
     SmartDashboard.putNumber("timer trapezoid", timer.get());
     TrapezoidProfile.State state = trapezoidProfilePositions.calculate(timer.get());
-    SmartDashboard.putNumber("state trapezoid", state.velocity);
+    SmartDashboard.putNumber("trapezoid position", state.position);
+    SmartDashboard.putNumber("trapezoid velocity", state.velocity);
     double feedforwardVoltage = feedforward.calculate(state.velocity, (state.velocity - lastVelocity)/(timer.get() - lastTime));
     SmartDashboard.putNumber("feedforwardVoltage", feedforwardVoltage);
     drivetrain.setVoltage(feedforwardVoltage, feedforwardVoltage);
+    lastTime = timer.get();
+    lastVelocity = state.velocity;
   }
 
   // Called once the command ends or is interrupted.

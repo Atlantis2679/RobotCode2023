@@ -1,5 +1,7 @@
 package frc.robot.subsystems.drivetrain;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+
 public final class DrivetrainConstants {
     public static final int LEFT_ID = 4;
     public static final int LEFT_FOLLOWER_ID = 3;
@@ -40,5 +42,21 @@ public final class DrivetrainConstants {
 
         public static final double POSITION_TOLERANCE = 0.05;
         public static final double VELOCITY_TOLERANCE = 0.02;
+    }
+
+    public static final class AutoPath {
+        public static final double KS = 1.0573;
+        public static final double KV = 0.92391;
+        public static final double KA = 0.883;
+
+        public static final double WHEEL_DISTANCE = 0.45;
+
+        public static final double MAX_ACCELERATION = 1;
+        public static final double MAX_VELOCITY = 1;
+
+        public static final double K_RAMESTE_B = 1;
+        public static final double K_RAMESTE_ZETA = 2;
+
+        public static final double KP = 0;
     }
 }
