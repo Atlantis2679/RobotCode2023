@@ -2,6 +2,13 @@ package frc.robot;
 
 import java.util.List;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+import com.pathplanner.lib.auto.RamseteAutoBuilder;
+import com.pathplanner.lib.commands.PPRamseteCommand;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -143,7 +150,7 @@ public final class Autos {
             AutoPath.KS,
             AutoPath.KV,
             AutoPath.KA),
-        new DifferentialDriveKinematics(AutoPath.WHEEL_DISTANCE),
+        Kinematics,
         10);
 
     TrajectoryConfig config = new TrajectoryConfig(
@@ -179,13 +186,25 @@ public final class Autos {
         drivetrain::setVoltage,
         drivetrain);
 
-
     return ramseteCommand.andThen(() -> drivetrain.setVoltage(0, 0));
   }
 
-  // public static Command pathFollower(Drivetrain drivetrain){
-  // return new RamseteCommand(null, null, null, null, null, null)
-  // }
+  public static Command drivePathPlanner(Drivetrain drivetrain) {
+    PathPlannerTrajectory examplePath = PathPlanner.loadPath("New Path", new PathConstraints(4, 3));
+    return new RamseteCommand(examplePath,
+        drivetrain::getPose,
+        new RamseteController(3, 7),
+        new SimpleMotorFeedforward(
+            AutoPath.KS,
+            AutoPath.KV,
+            AutoPath.KA),
+        new DifferentialDriveKinematics(AutoPath.WHEEL_DISTANCE),
+        drivetrain::getWheelSpeeds,
+        new PIDController(0, 0, 0),
+        new PIDController(0, 0, 0),
+        drivetrain::setVoltage,
+        drivetrain);
+  }
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");

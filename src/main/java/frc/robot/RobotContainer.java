@@ -107,7 +107,7 @@ public class RobotContainer {
                                 () -> driverController.rightBumper().getAsBoolean(),
                                 () -> driverController.rightBumper().getAsBoolean()));
 
-                
+                driverController.a().onTrue(Autos.drivePathPlanner(drivetrain));
                 
                 // operator
 
