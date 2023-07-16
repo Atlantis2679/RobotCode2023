@@ -1,11 +1,16 @@
 package frc.robot;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.swing.tree.ExpandVetoException;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.RamseteAutoBuilder;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 
@@ -142,68 +147,25 @@ public final class Autos {
         drivetrain);
   }
 
-  public static Command driveAutoPath(Drivetrain drivetrain) {
-    final DifferentialDriveKinematics Kinematics = new DifferentialDriveKinematics(AutoPath.WHEEL_DISTANCE);
-
-    DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
-        new SimpleMotorFeedforward(
-            AutoPath.KS,
-            AutoPath.KV,
-            AutoPath.KA),
-        Kinematics,
-        10);
-
-    TrajectoryConfig config = new TrajectoryConfig(
-        AutoPath.MAX_VELOCITY,
-        AutoPath.MAX_ACCELERATION)
-        .setKinematics(Kinematics)
-        .addConstraint(autoVoltageConstraint);
-
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(0, 0, new Rotation2d(0)),
-
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-
-        new Pose2d(3, 0, new Rotation2d(0)),
-
-        config);
-
-    drivetrain.resetOdometry(exampleTrajectory.getInitialPose());
-    drivetrain.setTrajectory(exampleTrajectory);
-
-    RamseteCommand ramseteCommand = new RamseteCommand(
-        exampleTrajectory,
-        drivetrain::getPose,
-        new RamseteController(AutoPath.K_RAMESTE_B, AutoPath.K_RAMESTE_ZETA),
-        new SimpleMotorFeedforward(
-            AutoPath.KS,
-            AutoPath.KV,
-            AutoPath.KA),
-        Kinematics,
-        drivetrain::getWheelSpeeds,
-        new PIDController(AutoPath.KP, 0, 0),
-        new PIDController(AutoPath.KP, 0, 0),
-        drivetrain::setVoltage,
-        drivetrain);
-
-    return ramseteCommand.andThen(() -> drivetrain.setVoltage(0, 0));
-  }
-
   public static Command drivePathPlanner(Drivetrain drivetrain) {
-    PathPlannerTrajectory examplePath = PathPlanner.loadPath("New Path", new PathConstraints(4, 3));
-    return new RamseteCommand(examplePath,
-        drivetrain::getPose,
-        new RamseteController(3, 7),
-        new SimpleMotorFeedforward(
-            AutoPath.KS,
-            AutoPath.KV,
-            AutoPath.KA),
-        new DifferentialDriveKinematics(AutoPath.WHEEL_DISTANCE),
+    PathPlannerTrajectory examplePath = PathPlanner.loadPath("New New Path", new PathConstraints(3, 2));
+    drivetrain.setTrajectory(examplePath);
+    RamseteAutoBuilder ramseteAutoBuilder = new RamseteAutoBuilder(
+      drivetrain::getPose,
+      drivetrain::resetOdometry,
+      new RamseteController(AutoPath.K_RAMESTE_B, AutoPath.K_RAMESTE_ZETA),
+      new DifferentialDriveKinematics(0.45),
+      new SimpleMotorFeedforward(
+        AutoPath.KS,
+        AutoPath.KV,
+        AutoPath.KA),
         drivetrain::getWheelSpeeds,
-        new PIDController(0, 0, 0),
-        new PIDController(0, 0, 0),
+        new PIDConstants(0.05, 0, 0),
         drivetrain::setVoltage,
-        drivetrain);
+        new HashMap<>(),
+        drivetrain
+    );
+    return ramseteAutoBuilder.fullAuto(examplePath);
   }
 
   private Autos() {
