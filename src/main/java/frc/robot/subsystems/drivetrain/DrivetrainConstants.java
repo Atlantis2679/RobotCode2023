@@ -45,9 +45,12 @@ public final class DrivetrainConstants {
     }
 
     public static final class AutoPath {
-        public static final double KS = 1.0573;
-        public static final double KV = 0.92391;
-        public static final double KA = 0.883;
+        // public static final double KS = 1.0573;
+        public static final double KS = 1.7;
+        // public static final double KV = 0.92391;
+        public static final double KV = 0.4;
+        // public static final double KA = 0.883;
+        public static final double KA = 0.22;
 
         public static final double WHEEL_DISTANCE = 0.45;
 
@@ -55,8 +58,9 @@ public final class DrivetrainConstants {
         public static final double MAX_VELOCITY = 1;
 
         public static final double K_RAMESTE_B = 1;
-        public static final double K_RAMESTE_ZETA = 2;
+        public static final double K_RAMESTE_ZETA = 2.4;
 
-        public static final double KP = 0;
+        public static final double KP = 0.2;
+        public static final double KD = 0.04;
     }
 }

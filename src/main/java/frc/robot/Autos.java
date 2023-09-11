@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +30,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants.Autos.ReleaseCone;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.commands.ArmController;
 import frc.robot.subsystems.arm.commands.ArmPositionsCommands;
@@ -148,8 +151,14 @@ public final class Autos {
   }
 
   public static Command drivePathPlanner(Drivetrain drivetrain) {
-    PathPlannerTrajectory examplePath = PathPlanner.loadPath("New New Path", new PathConstraints(3, 2));
-    drivetrain.setTrajectory(examplePath);
+    // PathPlannerTrajectory examplePath = PathPlanner.loadPath("New New Path", new PathConstraints(3, 2));
+    // drivetrain.setTrajectory(examplePath);
+
+    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("New New Path", new PathConstraints(3, 2));
+
+    HashMap<String, Command> eventMap = new HashMap<>();
+    eventMap.put("inatke", releaseCone(new Intake()));
+
     RamseteAutoBuilder ramseteAutoBuilder = new RamseteAutoBuilder(
       drivetrain::getPose,
       drivetrain::resetOdometry,
@@ -160,12 +169,14 @@ public final class Autos {
         AutoPath.KV,
         AutoPath.KA),
         drivetrain::getWheelSpeeds,
-        new PIDConstants(0.05, 0, 0),
+        new PIDConstants(AutoPath.KP, 0, AutoPath.KD),
         drivetrain::setVoltage,
-        new HashMap<>(),
+        eventMap,
         drivetrain
     );
-    return ramseteAutoBuilder.fullAuto(examplePath);
+
+    // return ramseteAutoBuilder.fullAuto(examplePath);
+    return ramseteAutoBuilder.fullAuto(pathGroup);
   }
 
   private Autos() {
