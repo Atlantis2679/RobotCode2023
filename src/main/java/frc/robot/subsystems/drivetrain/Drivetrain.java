@@ -11,23 +11,22 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
+
 
 public class Drivetrain extends SubsystemBase {
-    private static Drivetrain instance = null;
-    private final TalonSRX leftMotor = new TalonSRX(DrivetrainConstants.LEFT_ID);
-    private final TalonSRX leftMotorFollower = new TalonSRX(DrivetrainConstants.LEFT_FOLLOWER_ID);
-    private final TalonSRX rightMotor = new TalonSRX(DrivetrainConstants.RIGHT_ID);
-    private final TalonSRX rightMotorFollower = new TalonSRX(DrivetrainConstants.RIGHT_FOLLOWER_ID);
+    private final TalonSRX leftMotor = new TalonSRX(LEFT_ID);
+    private final TalonSRX leftMotorFollower = new TalonSRX(LEFT_FOLLOWER_ID);
+    private final TalonSRX rightMotor = new TalonSRX(RIGHT_ID);
+    private final TalonSRX rightMotorFollower = new TalonSRX(RIGHT_FOLLOWER_ID);
 
     private final PigeonIMU imu = new PigeonIMU(rightMotorFollower);
-    private final Encoder leftEncoder = new Encoder(DrivetrainConstants.LEFT_ENCODER_CHANNEL_A,
-            DrivetrainConstants.LEFT_ENCODER_CHANNEL_B);
-    private final Encoder rightEncoder = new Encoder(DrivetrainConstants.RIGHT_ENCODER_CHANNEL_A,
-            DrivetrainConstants.RIGHT_ENCODER_CHANNEL_B);
+    private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_CHANNEL_A, LEFT_ENCODER_CHANNEL_B);
+    private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_CHANNEL_A, RIGHT_ENCODER_CHANNEL_B);
 
-    private double pitchOffset = DrivetrainConstants.PITCH_OFFSET;
+    private double pitchOffset = PITCH_OFFSET_DEFAULT;
 
-    private Drivetrain() {
+    public Drivetrain() {
         SupplyCurrentLimitConfiguration currentLimitConfiguration = new SupplyCurrentLimitConfiguration(
                 true,
                 DrivetrainConstants.CURRENT_LIMIT_AMP,
@@ -105,13 +104,5 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("IMU pitch", getPitch());
         SmartDashboard.putNumber("left encoder drivetrain", getLeftDistanceMeters());
         SmartDashboard.putNumber("right encoder drivetrain", getRightDistanceMeters());
-    }
-
-    public static Drivetrain getInstance() {
-        if (instance == null) {
-            instance = new Drivetrain();
-        }
-
-        return instance;
     }
 }

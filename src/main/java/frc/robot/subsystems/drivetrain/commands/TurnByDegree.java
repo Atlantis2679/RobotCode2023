@@ -4,23 +4,17 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.drivetrain.DrivetrainConstants;
+import static frc.robot.subsystems.drivetrain.DrivetrainConstants.TurnByAngle.*;
 
 public class TurnByDegree extends CommandBase {
     private final Drivetrain drivetrain;
-    private final PIDController pidController = new PIDController(
-            DrivetrainConstants.TurnByAngle.KP,
-            DrivetrainConstants.TurnByAngle.KI,
-            DrivetrainConstants.TurnByAngle.KD);
+    private final PIDController pidController = new PIDController(KP, KI, KD);
 
     public TurnByDegree(Drivetrain drivetrain, double angle) {
         this.drivetrain = drivetrain;
         addRequirements(drivetrain);
         pidController.setSetpoint(angle / 360);
-        pidController.setTolerance(
-                DrivetrainConstants.TurnByAngle.POSITION_TOLERANCE,
-                DrivetrainConstants.TurnByAngle.VELOCITY_TOLERANCE
-        );
+        pidController.setTolerance(POSITION_TOLERANCE, VELOCITY_TOLERANCE);
     }
 
     @Override

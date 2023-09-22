@@ -14,7 +14,7 @@ public final class DrivetrainConstants {
     public static final int CURRENT_LIMIT_AMP = 30;
 
     public static final double MAX_VELOCITY = 4.6; // meters per second
-    public static final double PITCH_OFFSET = 0;
+    public static final double PITCH_OFFSET_DEFAULT = 0;
 
     public static final class ArcadeDrive {
         public static final double FORWARD_MULTIPLIER = 1;

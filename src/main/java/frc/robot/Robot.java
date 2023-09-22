@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
@@ -59,7 +60,13 @@ public class Robot extends LoggedRobot {
         if (isReal() || !Constants.REPLAY) {
             String logPath = getLogPath();
             Logger.getInstance().addDataReceiver(new WPILOGWriter(logPath));
-            Logger.getInstance().addDataReceiver(new NT4Publisher());
+            Logger.getInstance().addDataReceiver(new NT4Publisher() {
+                @Override
+                public void putTable(LogTable table) {
+                    if (isTest())
+                        super.putTable(table);
+                }
+            });
             LoggedPowerDistribution.getInstance(0, ModuleType.kCTRE);
         } else {
             setUseTiming(false);

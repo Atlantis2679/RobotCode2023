@@ -10,22 +10,19 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import static frc.robot.subsystems.arm.ArmConstants.*;
+
 public class Arm extends SubsystemBase {
-    private static Arm instance = null;
-    private final CANSparkMax motorShoulder = new CANSparkMax(ArmConstants.MOTOR_SHOULDER_ID, MotorType.kBrushless);
-    private final CANSparkMax motorShoulderFollower = new CANSparkMax(ArmConstants.MOTOR_SHOULDER_FOLLOWER_ID,
+    private final CANSparkMax motorShoulder = new CANSparkMax(MOTOR_SHOULDER_ID, MotorType.kBrushless);
+    private final CANSparkMax motorShoulderFollower = new CANSparkMax(MOTOR_SHOULDER_FOLLOWER_ID,
             MotorType.kBrushless);
-    private final CANSparkMax motorElbow = new CANSparkMax(ArmConstants.MOTOR_ELBOW_ID, MotorType.kBrushless);
+    private final CANSparkMax motorElbow = new CANSparkMax(MOTOR_ELBOW_ID, MotorType.kBrushless);
 
-    private final DutyCycleEncoder encoderShoulder = new DutyCycleEncoder(ArmConstants.ENCODER_SHOULDER_ID);
-    private final DutyCycleEncoder encoderElbow = new DutyCycleEncoder(ArmConstants.ENCODER_ELBOW_ID);
-    private final double SPEED_LIMIT_SHOULDER = ArmConstants.SPEED_LIMIT_SHOULDER;
-    private final double SPEED_LIMIT_ELBOW = ArmConstants.SPEED_LIMIT_ELBOW;
+    private final DutyCycleEncoder encoderShoulder = new DutyCycleEncoder(ENCODER_SHOULDER_ID);
+    private final DutyCycleEncoder encoderElbow = new DutyCycleEncoder(ENCODER_ELBOW_ID);
 
-    private double encoderShoulderZeroAngle = ArmConstants.ENCODER_SHOULDER_ZERO_ANGLE;
-    private double ENCODER_MAX_POSITIVE_SHOULDER = ArmConstants.ENCODER_MAX_POSITIVE_SHOULDER;
-    private double encoderElbowZeroAngle = ArmConstants.ENCODER_ELBOW_ZERO_ANGLE;
-    private double ENCODER_MAX_POSITIVE_ELBOW = ArmConstants.ENCODER_MAX_POSITIVE_ELBOW;
+    private double encoderShoulderZeroAngle = ENCODER_SHOULDER_ZERO_ANGLE_DEFAULT;
+    private double encoderElbowZeroAngle = ENCODER_ELBOW_ZERO_ANGLE_DEFAULT;
 
     private double shoulderAngle;
     private double elbowAngle;
@@ -36,8 +33,8 @@ public class Arm extends SubsystemBase {
         BADLY_CLOSED_OUT_OF_LOCK;
 
         public static LockedStates getFromAngles(double shoulderAngle, double elbowAngleRelativeToShoulder) {
-            if (shoulderAngle <= ArmConstants.LOCKED_MAX_SHOULDER_ANGLE) {
-                if (elbowAngleRelativeToShoulder >= ArmConstants.LOCKED_MIN_ELBOW_ANGLE) {
+            if (shoulderAngle <= LOCKED_MAX_SHOULDER_ANGLE) {
+                if (elbowAngleRelativeToShoulder >= LOCKED_MIN_ELBOW_ANGLE) {
                     return LockedStates.LOCKED;
                 }
                 return LockedStates.BADLY_CLOSED_OUT_OF_LOCK;
@@ -49,38 +46,38 @@ public class Arm extends SubsystemBase {
     private LockedStates lockedState;
 
     private final ArmFeedforward feedForwardShoulder = new ArmFeedforward(
-            ArmConstants.Feedforward.Shoulder.KS,
-            ArmConstants.Feedforward.Shoulder.KG,
-            ArmConstants.Feedforward.Shoulder.KV,
-            ArmConstants.Feedforward.Shoulder.KA);
+            Feedforward.Shoulder.KS,
+            Feedforward.Shoulder.KG,
+            Feedforward.Shoulder.KV,
+            Feedforward.Shoulder.KA);
 
     private final ArmFeedforward feedforwardElbow = new ArmFeedforward(
-            ArmConstants.Feedforward.Elbow.KS,
-            ArmConstants.Feedforward.Elbow.KG,
-            ArmConstants.Feedforward.Elbow.KV,
-            ArmConstants.Feedforward.Elbow.KA);
+            Feedforward.Elbow.KS,
+            Feedforward.Elbow.KG,
+            Feedforward.Elbow.KV,
+            Feedforward.Elbow.KA);
 
     private final PIDController pidControllerShoulder = new PIDController(
-            ArmConstants.Feedforward.Shoulder.KP,
-            ArmConstants.Feedforward.Shoulder.KI,
-            ArmConstants.Feedforward.Shoulder.KD);
+            Feedforward.Shoulder.KP,
+            Feedforward.Shoulder.KI,
+            Feedforward.Shoulder.KD);
 
     private final PIDController pidControllerElbow = new PIDController(
-            ArmConstants.Feedforward.Elbow.KP,
-            ArmConstants.Feedforward.Elbow.KI,
-            ArmConstants.Feedforward.Elbow.KD);
+            Feedforward.Elbow.KP,
+            Feedforward.Elbow.KI,
+            Feedforward.Elbow.KD);
 
     private boolean isEmergencyMode = false;
 
-    private Arm() {
-        motorShoulder.setSmartCurrentLimit(ArmConstants.CURRENT_LIMIT_SHOULDER_AMP);
+    public Arm() {
+        motorShoulder.setSmartCurrentLimit(CURRENT_LIMIT_SHOULDER_AMP);
         motorShoulder.setInverted(true);
-        motorShoulderFollower.setSmartCurrentLimit(ArmConstants.CURRENT_LIMIT_SHOULDER_AMP);
+        motorShoulderFollower.setSmartCurrentLimit(CURRENT_LIMIT_SHOULDER_AMP);
         motorShoulder.setIdleMode(CANSparkMax.IdleMode.kBrake);
         motorShoulderFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
         motorShoulderFollower.follow(motorShoulder, true);
 
-        motorElbow.setSmartCurrentLimit(ArmConstants.CURRENT_LIMIT_ELBOW_AMP);
+        motorElbow.setSmartCurrentLimit(CURRENT_LIMIT_ELBOW_AMP);
         motorElbow.setIdleMode(CANSparkMax.IdleMode.kBrake);
         motorElbow.setInverted(true);
 
@@ -88,12 +85,12 @@ public class Arm extends SubsystemBase {
         encoderElbow.setPositionOffset(0);
 
         pidControllerShoulder.setTolerance(
-                ArmConstants.Feedforward.Shoulder.TOLERANCE_POSITION,
-                ArmConstants.Feedforward.Shoulder.TOLERANCE_VELOCITY);
+                Feedforward.Shoulder.TOLERANCE_POSITION,
+                Feedforward.Shoulder.TOLERANCE_VELOCITY);
 
         pidControllerElbow.setTolerance(
-                ArmConstants.Feedforward.Elbow.TOLERANCE_POSITION,
-                ArmConstants.Feedforward.Elbow.TOLERANCE_VELOCITY);
+                Feedforward.Elbow.TOLERANCE_POSITION,
+                Feedforward.Elbow.TOLERANCE_VELOCITY);
     }
 
     @Override
@@ -209,12 +206,5 @@ public class Arm extends SubsystemBase {
 
     public boolean getEmergencyMode() {
         return isEmergencyMode;
-    }
-
-    public static Arm getInstance() {
-        if (instance == null) {
-            instance = new Arm();
-        }
-        return instance;
     }
 }

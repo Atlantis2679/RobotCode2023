@@ -7,8 +7,8 @@ public final class ArmConstants {
   public static final int ENCODER_SHOULDER_ID = 6;
   public static final int ENCODER_ELBOW_ID = 7;
   public static final int LIMIT_SWITCH_ID = 10;
-  public static final double ENCODER_SHOULDER_ZERO_ANGLE = -48.477;
-  public static final double ENCODER_ELBOW_ZERO_ANGLE = 333.678;
+  public static final double ENCODER_SHOULDER_ZERO_ANGLE_DEFAULT = -48.477;
+  public static final double ENCODER_ELBOW_ZERO_ANGLE_DEFAULT = 333.678;
   public static final double ENCODER_MAX_POSITIVE_SHOULDER = 150;
   public static final double ENCODER_MAX_POSITIVE_ELBOW = 200;
 
