@@ -33,12 +33,14 @@ public class RobotContainer {
         private final SendableChooser<CommandSupplier> secondAutoCommandChooser = new SendableChooser<>();
 
         public RobotContainer() {
-                UsbCamera camera = CameraServer.startAutomaticCapture();
-                camera.setVideoMode(
-                                VideoMode.PixelFormat.kMJPEG,
-                                Constants.Camera.WIDTH,
-                                Constants.Camera.HEIGHT,
-                                Constants.Camera.FPS);
+                if (Robot.isReal()) {
+                        UsbCamera camera = CameraServer.startAutomaticCapture();
+                        camera.setVideoMode(
+                                        VideoMode.PixelFormat.kMJPEG,
+                                        Constants.Camera.WIDTH,
+                                        Constants.Camera.HEIGHT,
+                                        Constants.Camera.FPS);
+                }
 
                 configureBindings();
                 firstAutoCommandChooser.setDefaultOption(
