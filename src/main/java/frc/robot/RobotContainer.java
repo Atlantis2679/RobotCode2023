@@ -1,7 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.commands.ArmController;
 import frc.robot.subsystems.arm.commands.ArmPositionsCommands;
@@ -33,9 +31,9 @@ public class RobotContainer {
     }
 
     private final LoggedDashboardChooser<CommandSupplier> firstAutoCommandChooser = new LoggedDashboardChooser<>(
-            "firstAuto");
+            "First Auto Command");
     private final LoggedDashboardChooser<CommandSupplier> secondAutoCommandChooser = new LoggedDashboardChooser<>(
-            "secondAuto");
+            "Second Auto Command");
 
     public RobotContainer() {
         if (Robot.isReal()) {

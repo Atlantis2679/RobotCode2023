@@ -8,6 +8,11 @@ import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import frc.robot.Robot;
 import frc.robot.Utils.fields.types.*;
 
@@ -225,6 +230,26 @@ public class FieldsTable implements LoggableInputs {
     }
 
     public void recordOutput(String name, String[] value) {
+        logger.recordOutput(prefix + name, value);
+    }
+
+    public void recordOutput(String name, Pose2d... value) {
+        logger.recordOutput(prefix + name, value);
+    }
+
+    public void recordOutput(String name, Pose3d... value) {
+        logger.recordOutput(prefix + name, value);
+    }
+
+    public void recordOutput(String name, Trajectory value) {
+        logger.recordOutput(prefix + name, value);
+    }
+
+    public void recordOutput(String name, SwerveModuleState... value) {
+        logger.recordOutput(prefix + name, value);
+    }
+
+    public void recordOutput(String name, Mechanism2d value) {
         logger.recordOutput(prefix + name, value);
     }
 }
