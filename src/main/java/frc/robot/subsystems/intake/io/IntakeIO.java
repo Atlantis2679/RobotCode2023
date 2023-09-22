@@ -1,14 +1,11 @@
 package frc.robot.subsystems.intake.io;
 
-import java.util.function.Supplier;
-
 import frc.robot.Utils.fields.FieldsTable;
+import frc.robot.Utils.fields.IOBase;
 
-public abstract class IntakeIO {
-    private final FieldsTable fields;
-
+public abstract class IntakeIO extends IOBase {
     public IntakeIO(FieldsTable fieldsTable) {
-        fields = fieldsTable;
+        super(fieldsTable);
     }
 
     public abstract void setSpeed(double demand);
