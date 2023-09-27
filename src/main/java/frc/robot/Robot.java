@@ -56,14 +56,15 @@ public class Robot extends LoggedRobot {
         logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
         logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
         logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
-
+        
         if (isReal() || !Constants.REPLAY) {
             String logPath = getLogPath();
+
             Logger.getInstance().addDataReceiver(new WPILOGWriter(logPath));
             Logger.getInstance().addDataReceiver(new NT4Publisher() {
                 @Override
                 public void putTable(LogTable table) {
-                    if (isTest())
+                    if (table.getBoolean("DriverStation/Test", false))
                         super.putTable(table);
                 }
             });

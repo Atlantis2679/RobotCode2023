@@ -25,5 +25,4 @@ public class IntakeIOTalon extends IntakeIO {
     public void setSpeed(double demand) {
         motor.set(ControlMode.PercentOutput, demand);
     }
-
 }
