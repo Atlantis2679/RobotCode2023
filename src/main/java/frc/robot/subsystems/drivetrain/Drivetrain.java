@@ -69,16 +69,16 @@ public class Drivetrain extends SubsystemBase {
         return io.rightDistanceMeters.get();
     }
 
-    public Rotation2d getRotation2d(){
-        return io.getRotation2d();
-    }
-
     public void resetOdometry(Pose2d pose) {
-        odometry.resetPosition(getRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters(), pose);
+        odometry.resetPosition(new Rotation2d(Math.toRadians(getYaw())), getLeftDistanceMeters(), getRightDistanceMeters(), pose);
     }
 
     public Pose2d getPose() {
         return odometry.getPoseMeters();
+    }
+
+    public Rotation2d geRotation2d() {
+        return new Rotation2d(Math.toRadians(getYaw()));
     }
 
 
@@ -89,7 +89,7 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("left encoder drivetrain", getLeftDistanceMeters());
         SmartDashboard.putNumber("right encoder drivetrain", getRightDistanceMeters());
 
-        odometry.update(getRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters());
+        odometry.update(geRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters());
 
         fields.recordOutput("Odometry", odometry.getPoseMeters());
     }

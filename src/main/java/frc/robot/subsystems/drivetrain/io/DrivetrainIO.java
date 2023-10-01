@@ -25,8 +25,6 @@ public abstract class DrivetrainIO extends IOBase {
     protected abstract double getLeftDistanceMeters();
     
     protected abstract double getRightDistanceMeters();
-
-    public abstract Rotation2d getRotation2d(); 
     
     //-----OUTPUTS--------------------
     public abstract void setLeftSpeed(double demand);

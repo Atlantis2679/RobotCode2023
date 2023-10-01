@@ -84,11 +84,6 @@ public class DrivetrainIOTalon extends DrivetrainIO {
     }
 
     @Override
-    public Rotation2d getRotation2d(){
-        return new Rotation2d(Math.toRadians(getYaw()));
-    }
-
-    @Override
     public void setLeftSpeed(double demand) {
         leftMotor.set(ControlMode.PercentOutput, demand);        
     }
