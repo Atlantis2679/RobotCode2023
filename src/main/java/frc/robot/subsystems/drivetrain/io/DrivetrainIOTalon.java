@@ -6,7 +6,9 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import frc.robot.Utils.fields.FieldsTable;
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Encoder;
 
 import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;
@@ -17,7 +19,7 @@ public class DrivetrainIOTalon extends DrivetrainIO {
     private final TalonSRX rightMotor = new TalonSRX(RIGHT_ID);
     private final TalonSRX rightMotorFollower = new TalonSRX(RIGHT_FOLLOWER_ID);
 
-    private final PigeonIMU imu = new PigeonIMU(rightMotorFollower);
+    private final  WPI_PigeonIMU imu = new WPI_PigeonIMU(rightMotorFollower);
     private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_CHANNEL_A, LEFT_ENCODER_CHANNEL_B);
     private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_CHANNEL_A, RIGHT_ENCODER_CHANNEL_B);
 
@@ -82,6 +84,11 @@ public class DrivetrainIOTalon extends DrivetrainIO {
     }
 
     @Override
+    public Rotation2d getRotation2d(){
+        return new Rotation2d(Math.toRadians(getYaw()));
+    }
+
+    @Override
     public void setLeftSpeed(double demand) {
         leftMotor.set(ControlMode.PercentOutput, demand);        
     }
@@ -105,5 +112,10 @@ public class DrivetrainIOTalon extends DrivetrainIO {
     @Override
     public void resetRightDistance(){
         rightEncoder.reset();
+    }
+
+    @Override
+    public void resetIMU() {
+        imu.reset();
     }
 }

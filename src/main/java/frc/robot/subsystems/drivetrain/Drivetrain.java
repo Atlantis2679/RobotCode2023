@@ -3,7 +3,11 @@ package frc.robot.subsystems.drivetrain;
 
 
 import edu.wpi.first.math.MathUtil;
-
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -18,7 +22,16 @@ public class Drivetrain extends SubsystemBase {
     private final DrivetrainIO io = new DrivetrainIOTalon(fields);
     private double pitchOffset = PITCH_OFFSET_DEFAULT;
 
+    private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(
+        Rotation2d.fromDegrees(0),
+        0,
+        0,
+        new Pose2d(new Translation2d(8, 3 ), Rotation2d.fromDegrees(0))
+    );
 
+    public Drivetrain() {
+        io.resetIMU();
+    }
 
     public void setSpeed(double leftDemand, double rightDemand){
         leftDemand = MathUtil.clamp(leftDemand, -1, 1);
@@ -56,10 +69,28 @@ public class Drivetrain extends SubsystemBase {
         return io.rightDistanceMeters.get();
     }
 
+    public Rotation2d getRotation2d(){
+        return io.getRotation2d();
+    }
+
+    public void resetOdometry(Pose2d pose) {
+        odometry.resetPosition(getRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters(), pose);
+    }
+
+    public Pose2d getPose() {
+        return odometry.getPoseMeters();
+    }
+
+
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("IMU pitch", getPitch());
         SmartDashboard.putNumber("left encoder drivetrain", getLeftDistanceMeters());
         SmartDashboard.putNumber("right encoder drivetrain", getRightDistanceMeters());
+
+        odometry.update(getRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters());
+
+        fields.recordOutput("Odometry", odometry.getPoseMeters());
     }
 }

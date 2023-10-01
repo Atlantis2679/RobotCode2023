@@ -49,19 +49,24 @@ public class Robot extends LoggedRobot {
     private void initializeAdvantageKit() {
         Logger logger = Logger.getInstance();
 
-        logger.recordMetadata("ProjectName", "RobotCode2023");
         logger.recordMetadata("RuntimeType", getRuntimeType().toString());
         logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
         logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
         logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
         logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
-        
-        if (isReal() || !Constants.REPLAY) {
+
+        if (isSimulation() && Constants.REPLAY) {
+            setUseTiming(false);
+            String logPath = LogFileUtil.findReplayLog();
+            logger.setReplaySource(new WPILOGReader(logPath));
+            logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_replay")));
+
+        } else {
             String logPath = getLogPath();
 
-            Logger.getInstance().addDataReceiver(new WPILOGWriter(logPath));
-            Logger.getInstance().addDataReceiver(new NT4Publisher() {
+            logger.addDataReceiver(new WPILOGWriter(logPath));
+            logger.addDataReceiver(new NT4Publisher() {
                 @Override
                 public void putTable(LogTable table) {
                     if (table.getBoolean("DriverStation/Test", false))
@@ -69,11 +74,6 @@ public class Robot extends LoggedRobot {
                 }
             });
             LoggedPowerDistribution.getInstance(0, ModuleType.kCTRE);
-        } else {
-            setUseTiming(false);
-            String logPath = LogFileUtil.findReplayLog();
-            Logger.getInstance().setReplaySource(new WPILOGReader(logPath));
-            Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_replay")));
         }
 
         logger.start();

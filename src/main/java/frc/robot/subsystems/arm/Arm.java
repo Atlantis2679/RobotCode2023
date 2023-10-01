@@ -9,17 +9,17 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Utils.fields.FieldsTable;
+import frc.robot.subsystems.arm.io.ArmIO;
+import frc.robot.subsystems.arm.io.ArmIOSparkMax;
 
 import static frc.robot.subsystems.arm.ArmConstants.*;
 
-public class Arm extends SubsystemBase {
-    private final CANSparkMax motorShoulder = new CANSparkMax(MOTOR_SHOULDER_ID, MotorType.kBrushless);
-    private final CANSparkMax motorShoulderFollower = new CANSparkMax(MOTOR_SHOULDER_FOLLOWER_ID,
-            MotorType.kBrushless);
-    private final CANSparkMax motorElbow = new CANSparkMax(MOTOR_ELBOW_ID, MotorType.kBrushless);
+import java.lang.reflect.Field;
 
-    private final DutyCycleEncoder encoderShoulder = new DutyCycleEncoder(ENCODER_SHOULDER_ID);
-    private final DutyCycleEncoder encoderElbow = new DutyCycleEncoder(ENCODER_ELBOW_ID);
+public class Arm extends SubsystemBase {
+    private final FieldsTable fields = new FieldsTable(getName());
+    private final ArmIO io = new ArmIOSparkMax(fields);
 
     private double encoderShoulderZeroAngle = ENCODER_SHOULDER_ZERO_ANGLE_DEFAULT;
     private double encoderElbowZeroAngle = ENCODER_ELBOW_ZERO_ANGLE_DEFAULT;
@@ -69,39 +69,15 @@ public class Arm extends SubsystemBase {
 
     private boolean isEmergencyMode = false;
 
-    public Arm() {
-        motorShoulder.setSmartCurrentLimit(CURRENT_LIMIT_SHOULDER_AMP);
-        motorShoulder.setInverted(true);
-        motorShoulderFollower.setSmartCurrentLimit(CURRENT_LIMIT_SHOULDER_AMP);
-        motorShoulder.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        motorShoulderFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        motorShoulderFollower.follow(motorShoulder, true);
-
-        motorElbow.setSmartCurrentLimit(CURRENT_LIMIT_ELBOW_AMP);
-        motorElbow.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        motorElbow.setInverted(true);
-
-        encoderShoulder.setPositionOffset(0);
-        encoderElbow.setPositionOffset(0);
-
-        pidControllerShoulder.setTolerance(
-                Feedforward.Shoulder.TOLERANCE_POSITION,
-                Feedforward.Shoulder.TOLERANCE_VELOCITY);
-
-        pidControllerElbow.setTolerance(
-                Feedforward.Elbow.TOLERANCE_POSITION,
-                Feedforward.Elbow.TOLERANCE_VELOCITY);
-    }
-
     @Override
     public void periodic() {
         shoulderAngle = normalizeAbsoluteAngle(
-                -encoderShoulder.getAbsolutePosition(),
+                -io.shoulderAngle.get(),
                 encoderShoulderZeroAngle,
                 ENCODER_MAX_POSITIVE_SHOULDER);
 
         elbowAngle = normalizeAbsoluteAngle(
-                encoderElbow.getAbsolutePosition(),
+                io.elbowAngle.get(),
                 encoderElbowZeroAngle,
                 ENCODER_MAX_POSITIVE_ELBOW);
 
@@ -118,8 +94,8 @@ public class Arm extends SubsystemBase {
     }
 
     public void resetEncoders() {
-        encoderShoulderZeroAngle = -encoderShoulder.getAbsolutePosition() * 360;
-        encoderElbowZeroAngle = encoderElbow.getAbsolutePosition() * 360;
+        encoderShoulderZeroAngle = -io.shoulderAngle.get() * 360;
+        encoderElbowZeroAngle = io.elbowAngle.get() * 360;
     }
 
     public void setVoltageShoulder(double demand) {
@@ -127,7 +103,7 @@ public class Arm extends SubsystemBase {
 
         if (lockedState == LockedStates.BADLY_CLOSED_OUT_OF_LOCK && demand < 0)
             demand = 0;
-        motorShoulder.setVoltage(MathUtil.clamp(demand, -12 * SPEED_LIMIT_SHOULDER, 12 * SPEED_LIMIT_SHOULDER));
+        io.setVoltageShoulder(MathUtil.clamp(demand, -12 * SPEED_LIMIT_SHOULDER, 12 * SPEED_LIMIT_SHOULDER));
     }
 
     public void setVoltageElbow(double demand) {
@@ -136,7 +112,7 @@ public class Arm extends SubsystemBase {
         if (lockedState == LockedStates.LOCKED && demand < 0)
             demand = 0;
 
-        motorElbow.setVoltage(MathUtil.clamp(demand, -12 * SPEED_LIMIT_ELBOW, 12 * SPEED_LIMIT_ELBOW));
+        io.setVoltageElbow(MathUtil.clamp(demand, -12 * SPEED_LIMIT_ELBOW, 12 * SPEED_LIMIT_ELBOW));
     }
 
     public double normalizeAbsoluteAngle(double angle, double zeroAngle, double maxPositive) {
