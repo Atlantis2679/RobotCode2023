@@ -1,13 +1,10 @@
 package frc.robot.subsystems.drivetrain;
 
-
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -23,17 +20,16 @@ public class Drivetrain extends SubsystemBase {
     private double pitchOffset = PITCH_OFFSET_DEFAULT;
 
     private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(
-        Rotation2d.fromDegrees(0),
-        0,
-        0,
-        new Pose2d(new Translation2d(8, 3 ), Rotation2d.fromDegrees(0))
-    );
+            Rotation2d.fromDegrees(0),
+            0,
+            0,
+            new Pose2d(new Translation2d(8, 3), Rotation2d.fromDegrees(0)));
 
     public Drivetrain() {
         io.resetIMU();
     }
 
-    public void setSpeed(double leftDemand, double rightDemand){
+    public void setSpeed(double leftDemand, double rightDemand) {
         leftDemand = MathUtil.clamp(leftDemand, -1, 1);
         rightDemand = MathUtil.clamp(rightDemand, -1, 1);
         io.setLeftSpeed(leftDemand);
@@ -69,19 +65,21 @@ public class Drivetrain extends SubsystemBase {
         return io.rightDistanceMeters.get();
     }
 
+    public Rotation2d getRotation2d() {
+        return new Rotation2d(Math.toRadians(getYaw()));
+    }
+
     public void resetOdometry(Pose2d pose) {
-        odometry.resetPosition(new Rotation2d(Math.toRadians(getYaw())), getLeftDistanceMeters(), getRightDistanceMeters(), pose);
+        odometry.resetPosition(
+                getRotation2d(),
+                getLeftDistanceMeters(),
+                getRightDistanceMeters(),
+                pose);
     }
 
     public Pose2d getPose() {
         return odometry.getPoseMeters();
     }
-
-    public Rotation2d geRotation2d() {
-        return new Rotation2d(Math.toRadians(getYaw()));
-    }
-
-
 
     @Override
     public void periodic() {
@@ -89,7 +87,7 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("left encoder drivetrain", getLeftDistanceMeters());
         SmartDashboard.putNumber("right encoder drivetrain", getRightDistanceMeters());
 
-        odometry.update(geRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters());
+        odometry.update(getRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters());
 
         fields.recordOutput("Odometry", odometry.getPoseMeters());
     }

@@ -3,7 +3,6 @@ import java.util.function.Supplier;
 
 import frc.robot.Utils.fields.FieldsTable;
 import frc.robot.Utils.fields.IOBase;
-import frc.robot.subsystems.arm.Arm.LockedStates;
 
 public abstract class ArmIO extends IOBase{
     public final Supplier<Double> shoulderAngle = fields.addDouble("shoulder angle", this::getShoulderAbsoluteAngle);
@@ -21,8 +20,6 @@ public abstract class ArmIO extends IOBase{
 
 
     //-----OUTPUTS--------------------
-    public abstract void resetEncoders();
-
     public abstract void setVoltageShoulder(double demand);
 
     public abstract void setVoltageElbow(double demand);

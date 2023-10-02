@@ -2,7 +2,6 @@ package frc.robot.subsystems.drivetrain.io;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Utils.fields.FieldsTable;
 import frc.robot.Utils.fields.IOBase;
 

@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Utils.fields.FieldsTable;
 
@@ -16,14 +15,7 @@ public class ArmIOSparkMax extends ArmIO {
     private final CANSparkMax motorElbow = new CANSparkMax(MOTOR_ELBOW_ID, MotorType.kBrushless);
 
     private final DutyCycleEncoder encoderShoulder = new DutyCycleEncoder(ENCODER_SHOULDER_ID);
-    private final DutyCycleEncoder encoderElbow = new DutyCycleEncoder(ENCODER_ELBOW_ID);
-
-    private double encoderShoulderZeroAngle = ENCODER_SHOULDER_ZERO_ANGLE_DEFAULT;
-    private double encoderElbowZeroAngle = ENCODER_ELBOW_ZERO_ANGLE_DEFAULT;
-
-    private double shoulderAngle;
-    private double elbowAngle;
-    
+    private final DutyCycleEncoder encoderElbow = new DutyCycleEncoder(ENCODER_ELBOW_ID);    
 
     public ArmIOSparkMax(FieldsTable fieldsTable) {
         super(fieldsTable);
@@ -41,11 +33,6 @@ public class ArmIOSparkMax extends ArmIO {
 
         encoderShoulder.setPositionOffset(0);
         encoderElbow.setPositionOffset(0);
-    }
-
-    public void resetEncoders() {
-        encoderShoulderZeroAngle = -encoderShoulder.getAbsolutePosition() * 360;
-        encoderElbowZeroAngle = encoderElbow.getAbsolutePosition() * 360;
     }
 
     @Override

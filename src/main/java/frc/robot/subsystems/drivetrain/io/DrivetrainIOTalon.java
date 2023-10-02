@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.robot.Utils.fields.FieldsTable;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Encoder;
 
 import static frc.robot.subsystems.drivetrain.DrivetrainConstants.*;

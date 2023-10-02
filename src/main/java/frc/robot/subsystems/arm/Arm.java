@@ -1,12 +1,8 @@
 package frc.robot.subsystems.arm;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils.fields.FieldsTable;
@@ -15,11 +11,11 @@ import frc.robot.subsystems.arm.io.ArmIOSparkMax;
 
 import static frc.robot.subsystems.arm.ArmConstants.*;
 
-import java.lang.reflect.Field;
-
 public class Arm extends SubsystemBase {
     private final FieldsTable fields = new FieldsTable(getName());
     private final ArmIO io = new ArmIOSparkMax(fields);
+
+    private final ArmVisualizer armVisualizer = new ArmVisualizer(fields);
 
     private double encoderShoulderZeroAngle = ENCODER_SHOULDER_ZERO_ANGLE_DEFAULT;
     private double encoderElbowZeroAngle = ENCODER_ELBOW_ZERO_ANGLE_DEFAULT;
@@ -82,6 +78,11 @@ public class Arm extends SubsystemBase {
                 ENCODER_MAX_POSITIVE_ELBOW);
 
         lockedState = LockedStates.getFromAngles(shoulderAngle, elbowAngle);
+
+        armVisualizer.update(getShoulderAngle(), getElbowAngle());
+
+        fields.recordOutput("shoulderAngle", getShoulderAngle());
+        fields.recordOutput("elbowAngle", getElbowAngle());
 
         SmartDashboard.putNumber("arm angle shoulder", getShoulderAngle());
         SmartDashboard.putNumber("arm angle elbow", getElbowAngle());
