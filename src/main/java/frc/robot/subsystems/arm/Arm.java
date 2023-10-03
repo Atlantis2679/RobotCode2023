@@ -64,6 +64,16 @@ public class Arm extends SubsystemBase {
             Feedforward.Elbow.KD);
 
     private boolean isEmergencyMode = false;
+    
+    public Arm() {
+        pidControllerShoulder.setTolerance(
+                Feedforward.Shoulder.TOLERANCE_POSITION,
+                Feedforward.Shoulder.TOLERANCE_VELOCITY);
+
+        pidControllerElbow.setTolerance(
+                Feedforward.Elbow.TOLERANCE_POSITION,
+                Feedforward.Elbow.TOLERANCE_VELOCITY);
+    }
 
     @Override
     public void periodic() {
