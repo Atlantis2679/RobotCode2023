@@ -1,7 +1,7 @@
 package frc.robot;
 
 public final class Constants {
-    public static final boolean REPLAY = true;
+    public static final boolean REPLAY = false;
 
     public static final class Controllers {
         public static final int DRIVER_PORT = 0;

@@ -10,6 +10,8 @@ public class DriveToDistance extends CommandBase {
     private final Drivetrain drivetrain;
     private final PIDController pidControllerLeft = new PIDController(KP, KI, KD);
     private final PIDController pidControllerRight = new PIDController(KP, KI, KD);
+    private double startDistanceLeft = 0;
+    private double startDistanceRight = 0;
 
     public DriveToDistance(Drivetrain drivetrain, double meters) {
         this.drivetrain = drivetrain;
@@ -23,15 +25,16 @@ public class DriveToDistance extends CommandBase {
 
     @Override
     public void initialize() {
-        drivetrain.resetEncoders();
+        startDistanceLeft = drivetrain.getLeftDistanceMeters();
+        startDistanceRight = drivetrain.getRightDistanceMeters();
         pidControllerLeft.reset();
         pidControllerRight.reset();
     }
 
     @Override
     public void execute() {
-        double pidResultLeft = pidControllerLeft.calculate(drivetrain.getLeftDistanceMeters());
-        double pidResultRight = pidControllerRight.calculate(drivetrain.getRightDistanceMeters());
+        double pidResultLeft = pidControllerLeft.calculate(drivetrain.getLeftDistanceMeters() - startDistanceLeft);
+        double pidResultRight = pidControllerRight.calculate(drivetrain.getRightDistanceMeters() - startDistanceRight);
 
         drivetrain.setSpeed(pidResultLeft, pidResultRight);
     }

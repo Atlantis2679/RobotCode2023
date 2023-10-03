@@ -93,12 +93,6 @@ public class DrivetrainIOTalon extends DrivetrainIO {
     }
 
     @Override
-    public void setYaw(double angle) {
-        imu.setYaw(angle);
-        
-    }
-
-    @Override
     public void resetLeftDistance(){
         leftEncoder.reset();
     }

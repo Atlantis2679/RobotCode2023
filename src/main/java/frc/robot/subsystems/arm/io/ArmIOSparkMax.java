@@ -4,7 +4,6 @@ import static frc.robot.subsystems.arm.ArmConstants.*;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Utils.fields.FieldsTable;
 
@@ -37,7 +36,7 @@ public class ArmIOSparkMax extends ArmIO {
 
     @Override
     public void setVoltageShoulder(double demand) {
-        motorShoulder.setVoltage(MathUtil.clamp(demand, -12 * SPEED_LIMIT_SHOULDER, 12 * SPEED_LIMIT_SHOULDER));
+        motorShoulder.setVoltage(demand);
     }
 
     @Override

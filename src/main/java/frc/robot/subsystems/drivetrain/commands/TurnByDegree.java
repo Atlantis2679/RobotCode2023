@@ -9,6 +9,7 @@ import static frc.robot.subsystems.drivetrain.DrivetrainConstants.TurnByAngle.*;
 public class TurnByDegree extends CommandBase {
     private final Drivetrain drivetrain;
     private final PIDController pidController = new PIDController(KP, KI, KD);
+    private double startAngle = 0;
 
     public TurnByDegree(Drivetrain drivetrain, double angle) {
         this.drivetrain = drivetrain;
@@ -19,14 +20,14 @@ public class TurnByDegree extends CommandBase {
 
     @Override
     public void initialize() {
-        drivetrain.setYaw(0);
+        startAngle = drivetrain.getYaw();
         pidController.reset();
     }
 
     @Override
     public void execute() {
-        double currAngle = drivetrain.getYaw() / 360;
-        double pidResult = pidController.calculate(currAngle);
+        double currRotation = (drivetrain.getYaw() - startAngle) / 360;
+        double pidResult = pidController.calculate(currRotation);
         drivetrain.setSpeed(-pidResult, pidResult);
 
         SmartDashboard.putNumber("degrees yaw", drivetrain.getYaw());

@@ -101,29 +101,32 @@ public final class Autos {
                 .andThen(new BalanceOnChargeStation(drivetrain));
     }
 
-    public static Command driveForDistance(Drivetrain drivetrain, double metersDistance, double speed,
+    public static Command driveForDistance(
+            Drivetrain drivetrain,
+            double metersDistance,
+            double speed,
             boolean isReversed) {
         final double speedDemand = speed * (isReversed ? -1 : 1);
 
-        return new FunctionalCommand(() -> {
-            drivetrain.resetEncoders();
-            drivetrain.setSpeed(speedDemand, speedDemand);
-        },
-                () -> {
-                },
-                interrupted -> {
-                },
-                () -> {
-                    if (isReversed) {
-                        return drivetrain.getLeftDistanceMeters() < -metersDistance
-                                && drivetrain.getRightDistanceMeters() < -metersDistance;
-                    }
+    //     return new FunctionalCommand(() -> {
+    //         drivetrain.resetEncoders();
+    //         drivetrain.setSpeed(speedDemand, speedDemand);
+    //     },
+    //             () -> {
+    //             },
+    //             interrupted -> {
+    //             },
+    //             () -> {
+    //                 if (isReversed) {
+    //                     return drivetrain.getLeftDistanceMeters() < -metersDistance
+    //                             && drivetrain.getRightDistanceMeters() < -metersDistance;
+    //                 }
 
-                    return drivetrain.getLeftDistanceMeters() > metersDistance
-                            && drivetrain.getRightDistanceMeters() > metersDistance;
-                },
-                drivetrain);
-    }
+    //                 return drivetrain.getLeftDistanceMeters() > metersDistance
+    //                         && drivetrain.getRightDistanceMeters() > metersDistance;
+    //             },
+    //             drivetrain);
+    // }
 
     private Autos() {
         throw new UnsupportedOperationException("This is a utility class!");

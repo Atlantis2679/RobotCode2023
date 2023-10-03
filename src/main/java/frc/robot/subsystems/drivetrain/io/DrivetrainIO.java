@@ -30,8 +30,6 @@ public abstract class DrivetrainIO extends IOBase {
 
     public abstract void setRightSpeed(double demand);
     
-    public abstract void setYaw(double angle);
-
     public abstract void resetLeftDistance();
 
     public abstract void resetRightDistance();

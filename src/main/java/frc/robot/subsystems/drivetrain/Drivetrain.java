@@ -53,10 +53,6 @@ public class Drivetrain extends SubsystemBase {
         return io.yaw.get();
     }
 
-    public void setYaw(double angle) {
-        io.setYaw(angle);
-    }
-
     public double getLeftDistanceMeters() {
         return io.leftDistanceMeters.get();
     }
