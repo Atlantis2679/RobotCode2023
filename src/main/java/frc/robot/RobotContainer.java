@@ -94,7 +94,7 @@ public class RobotContainer {
                 () -> Autos.balanceChargeStation(
                         drivetrain,
                         arm,
-                        false));
+                        true));
 
         secondAutoCommandChooser.addOption(
                 "Drive Backwards Outside Community and turn 180 degrease",

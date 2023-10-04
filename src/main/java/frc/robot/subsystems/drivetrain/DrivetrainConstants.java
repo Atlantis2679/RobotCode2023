@@ -17,11 +17,11 @@ public final class DrivetrainConstants {
     public static final double PITCH_OFFSET_DEFAULT = 0;
 
     public static final class ArcadeDrive {
-        public static final double FORWARD_MULTIPLIER = 0.6;
-        public static final double SENSITIVE_FORWARD_MULTIPLIER = 0.7;
+        public static final double FORWARD_MULTIPLIER = 1;
+        public static final double SENSITIVE_FORWARD_MULTIPLIER = 0.5;
 
-        public static final double ROTATION_MULTIPLIER = 0.6;
-        public static final double SENSITIVE_ROTATION_MULTIPLIER = 0.6;
+        public static final double ROTATION_MULTIPLIER = 0.8;
+        public static final double SENSITIVE_ROTATION_MULTIPLIER = 0.4;
     }
 
     public static final class DriveToDistance {
