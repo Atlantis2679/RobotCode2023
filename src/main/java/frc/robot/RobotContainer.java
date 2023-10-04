@@ -173,7 +173,7 @@ public class RobotContainer {
         operatorController.rightBumper().whileTrue(
                 new RunCommand(() -> {
                     arm.setVoltageElbow(0);
-                    arm.setVoltageElbow(0);
+                    arm.setVoltageShoulder(0);
                 }, arm));
 
         // operatorController.rightStick().onTrue(new InstantCommand(() ->

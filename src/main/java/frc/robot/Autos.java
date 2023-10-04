@@ -118,9 +118,9 @@ public final class Autos {
                 return new InstantCommand(() -> {
                         startLeft.value = drivetrain.getLeftDistanceMeters();
                         startRight.value = drivetrain.getRightDistanceMeters();
-                        drivetrain.setSpeed(speed, speed);
+                        double directedSpeed = isReversed ? -speed : speed;
+                        drivetrain.setSpeed(directedSpeed, directedSpeed);
                 }).andThen(new WaitUntilCommand(() -> {
-
                         if (isReversed) {
                                 return (drivetrain.getLeftDistanceMeters() - startLeft.value) < -metersDistance
                                                 && (drivetrain.getRightDistanceMeters()
