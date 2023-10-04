@@ -7,7 +7,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.drivetrain.DrivetrainConstants;
+
+import static frc.robot.subsystems.drivetrain.DrivetrainConstants.ArcadeDrive.*;
 
 public class ArcadeDrive extends CommandBase {
     private final Drivetrain drivetrain;
@@ -17,18 +18,12 @@ public class ArcadeDrive extends CommandBase {
     private final BooleanSupplier IsSensitiveForwardSupplier;
     private final BooleanSupplier IsSensitiveRotationSupplier;
 
-    private final double FORWARD_MULTIPLIER = DrivetrainConstants.ArcadeDrive.FORWARD_MULTIPLIER;
-    private final double SENSITIVE_FORWARD_MULTIPLIER = DrivetrainConstants.ArcadeDrive.SENSITIVE_FORWARD_MULTIPLIER;
-    private final double ROTATION_MULTIPLIER = DrivetrainConstants.ArcadeDrive.ROTATION_MULTIPLIER;
-    private final double SENSITIVE_ROTATION_MULTIPLIER = DrivetrainConstants.ArcadeDrive.SENSITIVE_ROTATION_MULTIPLIER;
-
     public ArcadeDrive(
             Drivetrain drivetrain,
             DoubleSupplier forwardDemandSupplier,
             DoubleSupplier rotationDemandSupplier,
             BooleanSupplier isSensitiveForwardSupplier,
-            BooleanSupplier isSensitiveRotationSupplier
-    ) {
+            BooleanSupplier isSensitiveRotationSupplier) {
         this.drivetrain = drivetrain;
         addRequirements(this.drivetrain);
         this.forwardDemandSupplier = forwardDemandSupplier;
@@ -46,14 +41,15 @@ public class ArcadeDrive extends CommandBase {
         double forwardDemand = forwardDemandSupplier.getAsDouble();
         double rotationDemand = rotationDemandSupplier.getAsDouble();
 
-        forwardDemand = MathUtil.applyDeadband(forwardDemand, Constants.OI.JOYSTICKS_DEADBAND_VALUE);
-        rotationDemand = MathUtil.applyDeadband(rotationDemand, Constants.OI.JOYSTICKS_DEADBAND_VALUE);
-        
+        forwardDemand = MathUtil.applyDeadband(forwardDemand, Constants.Controllers.JOYSTICKS_DEADBAND_VALUE);
+        rotationDemand = MathUtil.applyDeadband(rotationDemand, Constants.Controllers.JOYSTICKS_DEADBAND_VALUE);
+
         forwardDemand = MathUtil.clamp(forwardDemand, -1.0, 1.0);
         rotationDemand = MathUtil.clamp(rotationDemand, -1.0, 1.0);
 
         forwardDemand *= IsSensitiveForwardSupplier.getAsBoolean() ? SENSITIVE_FORWARD_MULTIPLIER : FORWARD_MULTIPLIER;
-        rotationDemand *= IsSensitiveRotationSupplier.getAsBoolean() ? SENSITIVE_ROTATION_MULTIPLIER : ROTATION_MULTIPLIER;
+        rotationDemand *= IsSensitiveRotationSupplier.getAsBoolean() ? SENSITIVE_ROTATION_MULTIPLIER
+                : ROTATION_MULTIPLIER;
 
         // Square the inputs (while preserving the sign) to increase fine control
         // while permitting full power.
@@ -62,7 +58,6 @@ public class ArcadeDrive extends CommandBase {
 
         double leftSpeed;
         double rightSpeed;
-        
 
         double maxInput = Math.copySign(Math.max(Math.abs(forwardDemand), Math.abs(rotationDemand)), forwardDemand);
 

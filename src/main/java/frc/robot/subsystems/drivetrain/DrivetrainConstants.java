@@ -14,13 +14,13 @@ public final class DrivetrainConstants {
     public static final int CURRENT_LIMIT_AMP = 30;
 
     public static final double MAX_VELOCITY = 4.6; // meters per second
-    public static final double PITCH_OFFSET = 0;
+    public static final double PITCH_OFFSET_DEFAULT = 0;
 
     public static final class ArcadeDrive {
-        public static final double FORWARD_MULTIPLIER = 1;
+        public static final double FORWARD_MULTIPLIER = 0.6;
         public static final double SENSITIVE_FORWARD_MULTIPLIER = 0.7;
 
-        public static final double ROTATION_MULTIPLIER = 0.8;
+        public static final double ROTATION_MULTIPLIER = 0.6;
         public static final double SENSITIVE_ROTATION_MULTIPLIER = 0.6;
     }
 
@@ -40,5 +40,19 @@ public final class DrivetrainConstants {
 
         public static final double POSITION_TOLERANCE = 0.05;
         public static final double VELOCITY_TOLERANCE = 0.02;
+    }
+
+    public static final class startPos {
+        public static final double pos1x = 1.95; public static final double pos1y = 4.96;
+        public static final double pos2x = 1.95; public static final double pos2y = 4.42;
+        public static final double pos3x = 1.95; public static final double pos3y = 3.84;
+        public static final double pos4x = 1.95; public static final double pos4y = 3.3;
+        public static final double pos5x = 1.95; public static final double pos5y = 2.76;
+        public static final double pos6x = 1.95; public static final double pos6y = 2.18;
+        public static final double pos7x = 1.95; public static final double pos7y = 1.61;
+        public static final double pos8x = 1.95; public static final double pos8y = 1.08;
+        public static final double pos9x = 1.95; public static final double pos9y = 0.45;
+        public static final double defaultX = 8.3; public static final double defaultY = 4;
+        public static final double distanceFromSides = 12.68;
     }
 }

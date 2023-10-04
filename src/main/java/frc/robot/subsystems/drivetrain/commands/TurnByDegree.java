@@ -4,35 +4,30 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.drivetrain.DrivetrainConstants;
+import static frc.robot.subsystems.drivetrain.DrivetrainConstants.TurnByAngle.*;
 
 public class TurnByDegree extends CommandBase {
     private final Drivetrain drivetrain;
-    private final PIDController pidController = new PIDController(
-            DrivetrainConstants.TurnByAngle.KP,
-            DrivetrainConstants.TurnByAngle.KI,
-            DrivetrainConstants.TurnByAngle.KD);
+    private final PIDController pidController = new PIDController(KP, KI, KD);
+    private double startAngle = 0;
 
     public TurnByDegree(Drivetrain drivetrain, double angle) {
         this.drivetrain = drivetrain;
         addRequirements(drivetrain);
         pidController.setSetpoint(angle / 360);
-        pidController.setTolerance(
-                DrivetrainConstants.TurnByAngle.POSITION_TOLERANCE,
-                DrivetrainConstants.TurnByAngle.VELOCITY_TOLERANCE
-        );
+        pidController.setTolerance(POSITION_TOLERANCE, VELOCITY_TOLERANCE);
     }
 
     @Override
     public void initialize() {
-        drivetrain.setYaw(0);
+        startAngle = drivetrain.getYaw();
         pidController.reset();
     }
 
     @Override
     public void execute() {
-        double currAngle = drivetrain.getYaw() / 360;
-        double pidResult = pidController.calculate(currAngle);
+        double currRotation = (drivetrain.getYaw() - startAngle) / 360;
+        double pidResult = pidController.calculate(currRotation);
         drivetrain.setSpeed(-pidResult, pidResult);
 
         SmartDashboard.putNumber("degrees yaw", drivetrain.getYaw());

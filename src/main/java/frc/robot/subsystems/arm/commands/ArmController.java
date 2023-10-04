@@ -35,9 +35,9 @@ public class ArmController extends CommandBase {
 
     if(shouldCleanValues){
       shoulderDemand = MathUtil.clamp(shoulderDemand, -1, 1);
-      shoulderDemand = MathUtil.applyDeadband(shoulderDemand, Constants.OI.JOYSTICKS_DEADBAND_VALUE);
+      shoulderDemand = MathUtil.applyDeadband(shoulderDemand, Constants.Controllers.JOYSTICKS_DEADBAND_VALUE);
       elbowDemand = MathUtil.clamp(elbowDemand, -1.0, 1.0);
-      elbowDemand = MathUtil.applyDeadband(elbowDemand, Constants.OI.JOYSTICKS_DEADBAND_VALUE);
+      elbowDemand = MathUtil.applyDeadband(elbowDemand, Constants.Controllers.JOYSTICKS_DEADBAND_VALUE);
 
       shoulderDemand *= ArmConstants.Controller.MULTIPLIER_SHOULDER;
       elbowDemand *= ArmConstants.Controller.MULTIPLIER_ELBOW;
