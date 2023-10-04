@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Utils.RefValue;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.commands.ArmController;
 import frc.robot.subsystems.arm.commands.ArmPositionsCommands;
@@ -13,7 +14,6 @@ import frc.robot.subsystems.drivetrain.commands.BalanceOnChargeStation;
 import frc.robot.subsystems.drivetrain.commands.DriveToDistance;
 import frc.robot.subsystems.drivetrain.commands.GetOnChargeStation;
 import frc.robot.subsystems.drivetrain.commands.TurnByDegree;
-import frc.robot.subsystems.drivetrain.commands.driveForDistance;
 import frc.robot.subsystems.intake.Intake;
 
 import static frc.robot.Constants.Autos.*;
@@ -108,33 +108,30 @@ public final class Autos {
                                 .andThen(new BalanceOnChargeStation(drivetrain));
         }
 
-    public static Command driveForDistance(
-            Drivetrain drivetrain,
-            double metersDistance,
-            double speed,
-            boolean isReversed) {
-        return new driveForDistance(drivetrain);
+        public static Command driveForDistance(
+                        Drivetrain drivetrain,
+                        double metersDistance,
+                        double speed,
+                        boolean isReversed) {
+                final RefValue<Double> startLeft = new RefValue<>(0.0);
+                final RefValue<Double> startRight = new RefValue<>(0.0);
+                return new InstantCommand(() -> {
+                        startLeft.value = drivetrain.getLeftDistanceMeters();
+                        startRight.value = drivetrain.getRightDistanceMeters();
+                        drivetrain.setSpeed(speed, speed);
+                }).andThen(new WaitUntilCommand(() -> {
+
+                        if (isReversed) {
+                                return (drivetrain.getLeftDistanceMeters() - startLeft.value) < -metersDistance
+                                                && (drivetrain.getRightDistanceMeters()
+                                                                - startRight.value) < -metersDistance;
+                        }
+
+                        return (drivetrain.getLeftDistanceMeters() - startLeft.value) > metersDistance
+                                        && (drivetrain.getRightDistanceMeters() - startRight.value) > metersDistance;
+
+                }));
         }
-
-        // return new FunctionalCommand(() -> {
-        // drivetrain.resetEncoders();
-        // drivetrain.setSpeed(speedDemand, speedDemand);
-        // },
-        // () -> {
-        // },
-        // interrupted -> {
-        // },
-        // () -> {
-        // if (isReversed) {
-        // return drivetrain.getLeftDistanceMeters() < -metersDistance
-        // && drivetrain.getRightDistanceMeters() < -metersDistance;
-        // }
-
-        // return drivetrain.getLeftDistanceMeters() > metersDistance
-        // && drivetrain.getRightDistanceMeters() > metersDistance;
-        // },
-        // drivetrain);
-        // }
 
         private Autos() {
                 throw new UnsupportedOperationException("This is a utility class!");

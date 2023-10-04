@@ -44,11 +44,6 @@ public class Drivetrain extends SubsystemBase {
         pitchOffset = io.pitch.get();
     }
 
-    public void resetEncoders() {
-        io.resetLeftDistance();
-        io.resetRightDistance();
-    }
-
     public double getYaw() {
         return io.yaw.get();
     }

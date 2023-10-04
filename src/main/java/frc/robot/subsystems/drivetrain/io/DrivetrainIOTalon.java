@@ -93,16 +93,6 @@ public class DrivetrainIOTalon extends DrivetrainIO {
     }
 
     @Override
-    public void resetLeftDistance(){
-        leftEncoder.reset();
-    }
-
-    @Override
-    public void resetRightDistance(){
-        rightEncoder.reset();
-    }
-
-    @Override
     public void resetIMU() {
         imu.reset();
     }
