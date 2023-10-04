@@ -36,7 +36,7 @@ public class DriveToDistance extends CommandBase {
         double pidResultLeft = pidControllerLeft.calculate(drivetrain.getLeftDistanceMeters() - startDistanceLeft);
         double pidResultRight = pidControllerRight.calculate(drivetrain.getRightDistanceMeters() - startDistanceRight);
 
-        drivetrain.setSpeed(pidResultLeft, pidResultRight);
+        drivetrain.setSpeed(pidResultRight, pidResultRight);
     }
 
     @Override
