@@ -50,6 +50,7 @@ public class MoveArmToPosition extends CommandBase {
 
     @Override
     public void initialize() {
+        // System.out.println("move arm to position activated --");
         passLockDirection = PassLockDirection.getFromShoulderAngles(arm.getShoulderAngle(), targetPositionShoulder);
         if (passLockDirection == PassLockDirection.LOCKING) {
             elbowTimer.restart();

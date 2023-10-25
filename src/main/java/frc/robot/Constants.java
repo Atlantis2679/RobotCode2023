@@ -72,9 +72,9 @@ public final class Constants {
         }
 
         public static final class BalanceOnChargeStationConstants {
-            public static final double SPEED_TO_CLOSER_CENTER = 0.5;
+            public static final double SPEED_TO_CLOSER_CENTER = 0.4;
             public static final double DISTANCE_TO_CLOSER_CENTER = 0.3;
-            public static final double GET_CLOSER_TO_CENTER_TIMEOUT = 2;
+            public static final double GET_CLOSER_TO_CENTER_TIMEOUT = 3;//2
 
             public static final double MAX_SPEED = 0.27;
 

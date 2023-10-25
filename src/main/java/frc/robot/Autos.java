@@ -98,7 +98,7 @@ public final class Autos {
                                 .andThen(() -> drivetrain.setSpeed(
                                                 -BalanceOnChargeStationConstants.SPEED_TO_CLOSER_CENTER,
                                                 -BalanceOnChargeStationConstants.SPEED_TO_CLOSER_CENTER), drivetrain)
-                                .andThen(new WaitUntilCommand(() -> drivetrain.getPitch() > -18).withTimeout(0.15))
+                                .andThen(new WaitUntilCommand(() -> Math.abs(drivetrain.getPitch()) < 18).withTimeout(0.15))//0.15
                                 .andThen(driveForDistance(
                                                 drivetrain,
                                                 BalanceOnChargeStationConstants.DISTANCE_TO_CLOSER_CENTER,
