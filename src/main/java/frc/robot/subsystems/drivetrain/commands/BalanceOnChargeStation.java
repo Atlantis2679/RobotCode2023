@@ -2,12 +2,12 @@ package frc.robot.subsystems.drivetrain.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 import static frc.robot.Constants.Autos.BalanceOnChargeStationConstants.*;
 
-public class BalanceOnChargeStation extends CommandBase {
+public class BalanceOnChargeStation extends Command {
   private final Drivetrain drivetrain;
   private final PIDController pidController = new PIDController(KP, KI, KD);
 

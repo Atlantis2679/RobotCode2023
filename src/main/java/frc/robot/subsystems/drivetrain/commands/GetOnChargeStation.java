@@ -1,11 +1,11 @@
 package frc.robot.subsystems.drivetrain.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 import static frc.robot.Constants.Autos.GetOnChargeStationConstants.*;
 
-public class GetOnChargeStation extends CommandBase {
+public class GetOnChargeStation extends Command {
     private final Drivetrain drivetrain;
     private final boolean isReversed;
 

@@ -2,11 +2,11 @@ package frc.robot.subsystems.drivetrain.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import static frc.robot.subsystems.drivetrain.DrivetrainConstants.TurnByAngle.*;
 
-public class TurnByDegree extends CommandBase {
+public class TurnByDegree extends Command {
     private final Drivetrain drivetrain;
     private final PIDController pidController = new PIDController(KP, KI, KD);
     private double startAngle = 0;

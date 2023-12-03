@@ -4,13 +4,13 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 import static frc.robot.subsystems.drivetrain.DrivetrainConstants.ArcadeDrive.*;
 
-public class ArcadeDrive extends CommandBase {
+public class ArcadeDrive extends Command {
     private final Drivetrain drivetrain;
 
     private final DoubleSupplier forwardDemandSupplier;

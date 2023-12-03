@@ -1,12 +1,12 @@
 package frc.robot.subsystems.drivetrain.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 import static frc.robot.subsystems.drivetrain.DrivetrainConstants.DriveToDistance.*;
 
-public class DriveToDistance extends CommandBase {
+public class DriveToDistance extends Command {
     private final Drivetrain drivetrain;
     private final PIDController pidControllerLeft = new PIDController(KP, KI, KD);
     private final PIDController pidControllerRight = new PIDController(KP, KI, KD);

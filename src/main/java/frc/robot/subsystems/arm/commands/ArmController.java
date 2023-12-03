@@ -3,13 +3,13 @@ package frc.robot.subsystems.arm.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmConstants;
 import frc.robot.subsystems.arm.ArmValues;
 
-public class ArmController extends CommandBase {
+public class ArmController extends Command {
   private final Arm arm;
 
   private final DoubleSupplier shoulderDemandSupplier;
